@@ -20,20 +20,19 @@ const menuItems = [
 
 const Navbar = () => {
   const pathname = usePathname();
-  const [isProfileOpen, setIsProfileOpen] = useState(false); // State for profile modal
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
 
   const handleProfileClick = () => {
-    setIsProfileOpen((prevState) => !prevState); // Toggle modal
+    setIsProfileOpen((prevState) => !prevState);
   };
 
   const closeModal = () => {
-    setIsProfileOpen(false); // Close modal when clicking outside
+    setIsProfileOpen(false);
   };
 
   return (
     <>
       <div className="flex items-center justify-between p-4 border">
-        {/* Menu Links */}
         {menuItems.map((i) => (
           <div className="flex gap-2" key={i.title}>
             <div className="border-r-2 p-3">
@@ -58,7 +57,6 @@ const Navbar = () => {
           </div>
         ))}
         <div className="flex items-center gap-4">
-          {/* Notification Bell */}
           <div className="flex self-end items-center justify-center w-10 h-10 bg-gray-300 rounded-lg mb-4">
             <Image
               src="/images/icons/bell.png"
@@ -69,7 +67,6 @@ const Navbar = () => {
             />
           </div>
 
-          {/* Profile Icon */}
           <div
             className="flex self-end items-center justify-center w-10 h-10 bg-black rounded-lg mb-4 cursor-pointer"
             onClick={handleProfileClick}
@@ -85,18 +82,13 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* Profile Modal */}
       {isProfileOpen && (
         <>
-          {/* Backdrop */}
           <div
             className="fixed inset-0 bg-black bg-opacity-50 z-40"
             onClick={closeModal}
           ></div>
-
-          {/* Profile Modal Content */}
           <div className="fixed top-0 right-0 h-full w-50 bg-black text-white shadow-lg z-50 flex flex-col p-6">
-            {/* Profile Information */}
             <div className="flex items-center gap-4 mb-6">
               <Image
                 src="/images/icons/avatar.png"
@@ -112,7 +104,6 @@ const Navbar = () => {
             </div>
             <hr className="mb-2" />
 
-            {/* Settings and Logout Links */}
             <div className="flex flex-col space-y-4">
               <button className="flex items-center gap-2 text-gray-300 hover:text-white">
                 <Image
