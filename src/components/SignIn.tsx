@@ -8,32 +8,32 @@ const LoginPage = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    window.location.href = "/home";
+    // if (!email || !password) {
+    //   setError("Please enter both email and password.");
+    //   return;
+    // }
 
-    if (!email || !password) {
-      setError("Please enter both email and password.");
-      return;
-    }
+    // try {
+    //   const response = await fetch("https://api.example.com/login", {
+    //     method: "POST",
+    //     headers: {
+    //       "Content-Type": "application/json",
+    //     },
+    //     body: JSON.stringify({ email, password }),
+    //   });
 
-    try {
-      const response = await fetch("https://api.example.com/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password }),
-      });
+    //   const data = await response.json();
 
-      const data = await response.json();
-
-      if (response.ok) {
-        // Handle successful login (e.g., redirect to dashboard)
-        window.location.href = "/dashboard";
-      } else {
-        setError(data.message || "Failed to login. Please try again.");
-      }
-    } catch (err) {
-      setError("Something went wrong. Please try again later.");
-    }
+    //   if (response.ok) {
+    //     // Handle successful login (e.g., redirect to dashboard)
+    //     window.location.href = "/home";
+    //   } else {
+    //     setError(data.message || "Failed to login. Please try again.");
+    //   }
+    // } catch (err) {
+    //   setError("Something went wrong. Please try again later.");
+    // }
   };
 
   return (
