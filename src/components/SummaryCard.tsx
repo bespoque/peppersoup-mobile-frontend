@@ -27,7 +27,7 @@ const Products: FC<CardProps> = ({
   </div>
   <p className="text-xs mt-2">{subtitle}</p>
 
-  <button className="mt-4 px-4 py-2 text-sm font-medium text-blue-600 bg-blue-100 rounded hover:bg-blue-200">
+  <button className="mt-4 px-4 py-2 text-sm font-medium  rounded hover:bg-blue-200">
     {buttonText}
   </button>
 </div>
