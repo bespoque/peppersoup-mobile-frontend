@@ -6,7 +6,7 @@ interface CardProps {
   title: string;
   value: string | number;
   subtitle: string;
-  buttonText: string;
+  // buttonText: string;
 }
 
 const Products: FC<CardProps> = ({
@@ -14,7 +14,7 @@ const Products: FC<CardProps> = ({
   title,
   value,
   subtitle,
-  buttonText,
+  // buttonText,
 }) => {
   return (
 <div className="flex flex-col items-start justify-start p-4 bg-white border rounded-lg shadow-md w-full sm:w-72">
@@ -27,9 +27,9 @@ const Products: FC<CardProps> = ({
   </div>
   <p className="text-xs mt-2">{subtitle}</p>
 
-  <button className="mt-4 px-4 py-2 text-sm font-medium  rounded hover:bg-blue-200">
+  {/* <button className="mt-4 px-4 py-2 text-sm font-medium  rounded hover:bg-blue-200">
     {buttonText}
-  </button>
+  </button> */}
 </div>
 
   );

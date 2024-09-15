@@ -8,28 +8,28 @@ const cardData = [
     title: "Incoming Orders",
     value: "10",
     subtitle: "Last 2 Minutes",
-    buttonText: "View Orders",
+    // buttonText: "View Orders",
   },
   {
     iconSrc: "/images/icons/basket.png",
     title: "Completed Orders",
     value: "12,002",
     subtitle: "120 Orders Today",
-    buttonText: "View Orders",
+    // buttonText: "View Orders",
   },
   {
     iconSrc: "/images/icons/people.png",
     title: "Active Users",
     value: "33",
     subtitle: "10 in the last 7 Days",
-    buttonText: "View Users",
+    // buttonText: "View Users",
   },
   {
     iconSrc: "/images/icons/money.png",
     title: "Annual Revenue",
     value: "₦120,334",
     subtitle: "Today: ₦50,000",
-    buttonText: "View Revenue",
+    // buttonText: "View Revenue",
   },
 ];
 
@@ -45,7 +45,7 @@ const HomePage = () => {
             title={card.title}
             value={card.value}
             subtitle={card.subtitle}
-            buttonText={card.buttonText}
+            // buttonText={card.buttonText}
           />
         ))}
       </div>
