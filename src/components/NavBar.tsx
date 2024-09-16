@@ -22,7 +22,6 @@ const Navbar = () => {
   const pathname = usePathname();
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-
   const handleProfileClick = () => {
     setIsProfileOpen((prevState) => !prevState);
   };
@@ -42,8 +41,6 @@ const Navbar = () => {
           <div className="p-3">
             <Image src="/images/logo.png" alt="Logo" width={40} height={40} />
           </div>
-
-          {/* Hamburger menu for mobile */}
           <button
             className="block md:hidden w-10 h-10 bg-gray-200 rounded-lg flex items-center justify-center"
             onClick={toggleMobileMenu}
@@ -57,7 +54,6 @@ const Navbar = () => {
             />
           </button>
 
-          {/* Menu items (hidden on mobile, visible on larger screens) */}
           <div className="hidden md:flex gap-6">
             {menuItems[0].items.map((item) => {
               const isActive = pathname === item.href;
@@ -78,7 +74,6 @@ const Navbar = () => {
           </div>
         </div>
 
-        {/* Profile & Notification */}
         <div className="flex items-center gap-4">
           <div className="w-10 h-10 bg-gray-300 rounded-lg flex items-center justify-center mb-4">
             <Image
@@ -105,7 +100,6 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* Mobile menu dropdown */}
       {isMobileMenuOpen && (
         <div className="md:hidden bg-white border-t border-gray-200">
           <div className="flex flex-col p-4 space-y-2">
@@ -128,7 +122,6 @@ const Navbar = () => {
         </div>
       )}
 
-      {/* Profile Modal */}
       {isProfileOpen && (
         <>
           <div

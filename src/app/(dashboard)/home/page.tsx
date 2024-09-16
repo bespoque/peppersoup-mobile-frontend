@@ -1,5 +1,5 @@
 "use client"
-import MenuTabs from "@/src/components/MenuTabs";
+import FoodMenu from "@/src/components/FoodMenu";
 import Summary from "@/src/components/SummaryCard";
 
 const cardData = [
@@ -49,7 +49,7 @@ const HomePage = () => {
           />
         ))}
       </div>
-      <MenuTabs />
+      <FoodMenu />
     </div>
   );
 };
