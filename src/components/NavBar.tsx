@@ -21,6 +21,7 @@ const menuItems = [
 const Navbar = () => {
   const pathname = usePathname();
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const handleProfileClick = () => {
     setIsProfileOpen((prevState) => !prevState);
@@ -30,21 +31,41 @@ const Navbar = () => {
     setIsProfileOpen(false);
   };
 
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen((prev) => !prev);
+  };
+
   return (
     <>
       <div className="flex items-center justify-between p-4 border">
-        {menuItems.map((i) => (
-          <div className="flex gap-2" key={i.title}>
-            <div className="border-r-2 p-3">
-              <Image src="/images/logo.png" alt="Logo" width={40} height={40} />
-            </div>
-            {i.items.map((item) => {
+        <div className="flex gap-2">
+          <div className="p-3">
+            <Image src="/images/logo.png" alt="Logo" width={40} height={40} />
+          </div>
+
+          {/* Hamburger menu for mobile */}
+          <button
+            className="block md:hidden w-10 h-10 bg-gray-200 rounded-lg flex items-center justify-center"
+            onClick={toggleMobileMenu}
+            aria-label="Toggle menu"
+          >
+            <Image
+              src="/images/icons/profile.png"
+              alt="Menu"
+              width={24}
+              height={24}
+            />
+          </button>
+
+          {/* Menu items (hidden on mobile, visible on larger screens) */}
+          <div className="hidden md:flex gap-6">
+            {menuItems[0].items.map((item) => {
               const isActive = pathname === item.href;
               return (
                 <Link
                   href={item.href}
                   key={item.label}
-                  className={`flex items-center justify-center py-2 md:px-2 ${
+                  className={`py-2 md:px-2 ${
                     isActive ? "font-bold border-b-2 border-black" : ""
                   }`}
                 >
@@ -55,9 +76,11 @@ const Navbar = () => {
               );
             })}
           </div>
-        ))}
+        </div>
+
+        {/* Profile & Notification */}
         <div className="flex items-center gap-4">
-          <div className="flex self-end items-center justify-center w-10 h-10 bg-gray-300 rounded-lg mb-4">
+          <div className="w-10 h-10 bg-gray-300 rounded-lg flex items-center justify-center mb-4">
             <Image
               src="/images/icons/bell.png"
               alt="notifications"
@@ -68,7 +91,7 @@ const Navbar = () => {
           </div>
 
           <div
-            className="flex self-end items-center justify-center w-10 h-10 bg-black rounded-lg mb-4 cursor-pointer"
+            className="w-10 h-10 bg-black rounded-lg flex items-center justify-center mb-4 cursor-pointer"
             onClick={handleProfileClick}
           >
             <Image
@@ -82,6 +105,30 @@ const Navbar = () => {
         </div>
       </div>
 
+      {/* Mobile menu dropdown */}
+      {isMobileMenuOpen && (
+        <div className="md:hidden bg-white border-t border-gray-200">
+          <div className="flex flex-col p-4 space-y-2">
+            {menuItems[0].items.map((item) => {
+              const isActive = pathname === item.href;
+              return (
+                <Link
+                  href={item.href}
+                  key={item.label}
+                  className={`py-2 md:px-2 ${
+                    isActive ? "font-bold border-b-2 border-black" : ""
+                  }`}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  {item.label}
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* Profile Modal */}
       {isProfileOpen && (
         <>
           <div
