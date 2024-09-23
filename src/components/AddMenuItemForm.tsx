@@ -29,9 +29,7 @@ const AddMenuItemForm: React.FC<AddMenuItemFormProps> = ({ menuType }) => {
         Add New Menu Item - {menuType}
       </h2>
 
-      {/* 2-Column Grid Layout */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        {/* Left Column */}
         <div>
           <div className="mb-4">
             <label className="block text-sm font-semibold mb-1">Item Name*</label>
