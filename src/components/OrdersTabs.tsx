@@ -7,28 +7,29 @@ const OrdersTabs = () => {
   const tabLabels = ["Incoming", "Ongoing", "Completed"] as string[];
   const tabContent = {
     Incoming: (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {ordersData.map((order, index) => (
-          <OrderCard
-            key={index}
-            time={order.time}
-            amount={order.amount}
-            paymentMethod={order.paymentMethod}
-            customerName={order.customerName}
-            uid={order.uid}
-            address={order.address}
-            orderId={order.orderId}
-            distance={order.distance}
-            orderItems={order.orderItems}
-            discount={order.discount}
-            onAcceptOrder={() => console.log("Accepted order", order.orderId)}
-            onDeclineOrder={() => console.log("Declined order", order.orderId)}
-          />
-        ))}
-      </div>
+<div className="flex space-x-2 overflow-x-auto">
+  {ordersData.map((order, index) => (
+    <OrderCard
+      key={index}
+      time={order.time}
+      amount={order.amount}
+      paymentMethod={order.paymentMethod}
+      customerName={order.customerName}
+      uid={order.uid}
+      address={order.address}
+      orderId={order.orderId}
+      distance={order.distance}
+      orderItems={order.orderItems}
+      discount={order.discount}
+      onAcceptOrder={() => console.log("Accepted order", order.orderId)}
+      onDeclineOrder={() => console.log("Declined order", order.orderId)}
+    />
+  ))}
+</div>
+
     ),
     Ongoing: (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="flex space-x-2 overflow-x-auto">
         {ordersData.map((order, index) => (
           <OrderCard
             key={index}

@@ -12,7 +12,6 @@ type Order = {
 const CompletedOrdersTable: React.FC = () => {
   return (
     <div className="w-full p-4">
-      {/* Orders Table */}
       <table className="min-w-full mt-6 bg-white">
         <thead>
           <tr className="text-left bg-gray-100">

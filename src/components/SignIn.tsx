@@ -1,39 +1,41 @@
-"use client"
+"use client";
+
 import Image from "next/image";
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useUser } from "../context/UserContext";
+import { useApi } from "../hooks/useApi";
+
 const LoginPage = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const { setUser } = useUser();
+  const [email, setEmail] = useState("admin@gmail.com");
+  const [password, setPassword] = useState("smilesme");
+  const [loginError, setLoginError] = useState("");
+  const router = useRouter();
+  const { request, loading } = useApi();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    window.location.href = "/home";
-    // if (!email || !password) {
-    //   setError("Please enter both email and password.");
-    //   return;
-    // }
+    setLoginError(""); // Reset error before submission
 
-    // try {
-    //   const response = await fetch("https://api.example.com/login", {
-    //     method: "POST",
-    //     headers: {
-    //       "Content-Type": "application/json",
-    //     },
-    //     body: JSON.stringify({ email, password }),
-    //   });
+    try {
+      const data = await request("/api/core/account/login", "POST", {
+        email,
+        password,
+      });
 
-    //   const data = await response.json();
+      if (data.resp_code !== "00") {
+        // Assuming a non-"00" response code indicates an error
+        setLoginError(data.resp_message || "Login failed. Please try again.");
+        return;
+      }
 
-    //   if (response.ok) {
-    //     // Handle successful login (e.g., redirect to dashboard)
-    //     window.location.href = "/home";
-    //   } else {
-    //     setError(data.message || "Failed to login. Please try again.");
-    //   }
-    // } catch (err) {
-    //   setError("Something went wrong. Please try again later.");
-    // }
+      setUser(data.data.user); // Automatically persists due to the updated context
+      router.push("/home");
+    } catch (error: any) {
+      // If the error is not an API error, set a generic message
+      setLoginError(error?.response?.data?.resp_message || "Login failed. Please try again.");
+    }
   };
 
   return (
@@ -50,7 +52,7 @@ const LoginPage = () => {
               Welcome, Operations
             </h1>
 
-            {error && <p className="text-red-500 text-center">{error}</p>}
+            {loginError && <p className="text-red-500 text-center">{loginError}</p>}
 
             <form className="space-y-6" onSubmit={handleSubmit}>
               <div>
@@ -86,9 +88,6 @@ const LoginPage = () => {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                   />
-                  <span className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500">
-                    <Image src="/images/eye-slash.png" alt="" width={20} height={20} />
-                  </span>
                 </div>
               </div>
 
@@ -105,7 +104,7 @@ const LoginPage = () => {
                 type="submit"
                 className="w-full bg-black text-white py-3 rounded-md font-medium hover:bg-gray-900"
               >
-                Login to Operations
+                {loading ? "Logging in..." : "Login to Operations"}
               </button>
             </form>
           </div>

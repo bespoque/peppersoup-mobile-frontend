@@ -1,5 +1,6 @@
-"use client"
-import FoodMenu from "@/src/components/FoodMenu";
+"use client";
+
+import HomeFoodMenu from "@/src/components/HomeFoodMenuTabs";
 import Summary from "@/src/components/SummaryCard";
 
 const cardData = [
@@ -49,7 +50,7 @@ const HomePage = () => {
           />
         ))}
       </div>
-      <FoodMenu />
+      <HomeFoodMenu />
     </div>
   );
 };

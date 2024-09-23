@@ -1,9 +1,10 @@
+"use client"
 import { useState } from "react";
 import MenuData from "@/src/data/MenuData";
 import MenuItemCard from "@/src/components/MenuItemCard";
 import Tabs from "./Tabs";
 
-const FoodMenu = () => {
+const HomeFoodMenu = () => {
   const tabLabels = ["PepperSoup", "SideDishes", "Drinks"] as string[];
   const [activeDropdown, setActiveDropdown] = useState<number | null>(null);
   const handleDropdownToggle = (index: number) => {
@@ -64,4 +65,4 @@ const FoodMenu = () => {
   return <Tabs tabLabels={tabLabels} tabContent={tabContent} />;
 };
 
-export default FoodMenu;
+export default HomeFoodMenu;
