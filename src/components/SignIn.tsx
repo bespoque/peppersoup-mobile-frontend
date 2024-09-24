@@ -3,6 +3,7 @@
 import Image from "next/image";
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
+import Cookies from "js-cookie";
 import { useUser } from "../context/UserContext";
 import { useApi } from "../hooks/useApi";
 
@@ -14,29 +15,32 @@ const LoginPage = () => {
   const router = useRouter();
   const { request, loading } = useApi();
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setLoginError(""); // Reset error before submission
+const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  e.preventDefault();
+  setLoginError(""); 
 
-    try {
-      const data = await request("/api/core/account/login", "POST", {
-        email,
-        password,
-      });
+  try {
+    const data = await request("/api/core/account/login", "POST", {
+      email,
+      password,
+    });
 
-      if (data.resp_code !== "00") {
-        // Assuming a non-"00" response code indicates an error
-        setLoginError(data.resp_message || "Login failed. Please try again.");
-        return;
-      }
-
-      setUser(data.data.user); // Automatically persists due to the updated context
-      router.push("/home");
-    } catch (error: any) {
-      // If the error is not an API error, set a generic message
-      setLoginError(error?.response?.data?.resp_message || "Login failed. Please try again.");
+    if (data.resp_code !== "00") {
+      setLoginError(data.resp_message || "Login failed. Please try again.");
+      return;
     }
-  };
+    Cookies.set("token", data.data.token);
+    const expiryTime = new Date().getTime() + data.data.expirer_in * 1000;
+    Cookies.set("token_expiry", expiryTime.toString());
+    setUser(data.data.user);
+    router.push("/home");
+  } catch (error: any) {
+    setLoginError(
+      error?.response?.data?.resp_message || "Login failed. Please try again."
+    );
+  }
+};
+
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row bg-gray-100">
@@ -103,6 +107,7 @@ const LoginPage = () => {
               <button
                 type="submit"
                 className="w-full bg-black text-white py-3 rounded-md font-medium hover:bg-gray-900"
+                disabled={loading}
               >
                 {loading ? "Logging in..." : "Login to Operations"}
               </button>

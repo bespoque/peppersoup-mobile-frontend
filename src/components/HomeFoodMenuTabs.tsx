@@ -3,14 +3,17 @@ import { useState } from "react";
 import MenuData from "@/src/data/MenuData";
 import MenuItemCard from "@/src/components/MenuItemCard";
 import Tabs from "./Tabs";
+import Cookies from "js-cookie";
+import { useRouter } from "next/navigation";
 
 const HomeFoodMenu = () => {
   const tabLabels = ["PepperSoup", "SideDishes", "Drinks"] as string[];
   const [activeDropdown, setActiveDropdown] = useState<number | null>(null);
+  const router = useRouter()
   const handleDropdownToggle = (index: number) => {
     setActiveDropdown((prev) => (prev === index ? null : index));
   };
-
+  
   const tabContent = {
     PepperSoup: (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
