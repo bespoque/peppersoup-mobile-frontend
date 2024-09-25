@@ -7,14 +7,10 @@ import { useState } from "react";
 const HomeFoodMenu = () => {
   const tabLabels = ["PepperSoup", "SideDishes", "Drinks"] as string[];
   const [activeDropdown, setActiveDropdown] = useState<number | null>(null);
-  const { menuData, loading, error } = useMenu(); // Using the useMenu hook now
-
+  const { menuData, loading, error } = useMenu(); 
   const handleDropdownToggle = (index: number) => {
     setActiveDropdown((prev) => (prev === index ? null : index));
   };
-
- 
-  
 
   const tabContent = {
     PepperSoup: (
@@ -25,10 +21,10 @@ const HomeFoodMenu = () => {
             name={item.name}
             price={`₦${item.menu_item_portion_size[0]?.portion.amount}`}
             description={item.desc}
-            image={ '/images/loginplate.png'} // Add the image link from the API if available
+            image={"/images/loginplate.png"} 
             tags={item.menu_item_tags.map((tag) => tag.tag.name)}
-            isDropdownActive={activeDropdown === index} // Add this
-            onDropdownToggle={() => handleDropdownToggle(index)} // Add this
+            isDropdownActive={activeDropdown === index} 
+            onDropdownToggle={() => handleDropdownToggle(index)} 
           />
         ))}
       </div>
@@ -41,10 +37,10 @@ const HomeFoodMenu = () => {
             name={item.name}
             price={`₦${item.menu_item_portion_size[0]?.portion.amount}`}
             description={item.desc}
-            image={ '/images/menu/rice.png'} // Add the image link from the API if available
+            image={"/images/menu/rice.png"} 
             tags={item.menu_item_tags.map((tag) => tag.tag.name)}
-            isDropdownActive={activeDropdown === index} // Add this
-            onDropdownToggle={() => handleDropdownToggle(index)} // Add this
+            isDropdownActive={activeDropdown === index}
+            onDropdownToggle={() => handleDropdownToggle(index)} 
           />
         ))}
       </div>
@@ -57,10 +53,11 @@ const HomeFoodMenu = () => {
             name={item.name}
             price={`₦${item.menu_item_portion_size[0]?.portion.amount}`}
             description={item.desc}
-            image={ '/images/menu/wine.png'} // Add the image link from the API if available
+            image={"/images/menu/wine.png"}
+            // image={item.menu_item_images[0]?.image_link}
             tags={item.menu_item_tags.map((tag) => tag.tag.name)}
-            isDropdownActive={activeDropdown === index} // Add this
-            onDropdownToggle={() => handleDropdownToggle(index)} // Add this
+            isDropdownActive={activeDropdown === index}
+            onDropdownToggle={() => handleDropdownToggle(index)}
           />
         ))}
       </div>
@@ -69,7 +66,7 @@ const HomeFoodMenu = () => {
 
   return (
     <>
-      {loading && <Loader />} {/* Use your custom Loading component */}
+      {loading && <Loader />}
       {error && <p className="text-red-500">{error}</p>}
       <Tabs tabLabels={tabLabels} tabContent={tabContent} />
     </>
@@ -77,6 +74,3 @@ const HomeFoodMenu = () => {
 };
 
 export default HomeFoodMenu;
-
-
-

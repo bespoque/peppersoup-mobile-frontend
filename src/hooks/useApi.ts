@@ -12,7 +12,7 @@ export const useApi = () => {
     setLoading(true);
     setError(null);
 
-    const token = Cookies.get("token"); // Ensure token is securely stored
+    const token = Cookies.get("token"); 
 
     try {
       const response = await axios({
@@ -22,9 +22,9 @@ export const useApi = () => {
           "Content-Type": "application/json",
           "UserId": "admin@gmail.com",
           "UserType": "1",
-          Authorization: `Bearer ${token}`, // Secure API with token
+          Authorization: `Bearer ${token}`,
         },
-        params, // Pass query parameters here (like category_id)
+        params, 
       });
 
       setLoading(false);

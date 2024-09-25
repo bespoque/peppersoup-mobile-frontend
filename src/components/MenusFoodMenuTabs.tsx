@@ -1,11 +1,12 @@
 "use client";
-import { useState, useRef } from "react";
-import MenuData from "@/src/data/MenuData";
+import { useState } from "react";
 import MenuItemCard from "@/src/components/MenuItemCard";
 import Tabs from "./Tabs";
+import { useMenu } from "../context/MenuContext";
 
 const MenusFoodMenu = () => {
   const tabLabels = ["on-the-menu", "all-saved-items"] as string[];
+  const { menuData, loading, error } = useMenu(); 
   const [activeDropdown, setActiveDropdown] = useState<number | null>(null);
 
   const handleDropdownToggle = (index: number) => {
@@ -19,14 +20,14 @@ const MenusFoodMenu = () => {
         <h4>Peppersoup</h4>
         <div className="overflow-x-auto mt-4">
           <div className="flex gap-6">
-            {MenuData.PepperSoup.map((item, index) => (
+            {menuData.PepperSoup.map((item, index) => (
               <div key={index}>
                 <MenuItemCard
                   name={item.name}
-                  price={item.price}
-                  description={item.description}
-                  image={item.image}
-                  tags={item.tags}
+                  price={`₦${item.menu_item_portion_size[0]?.portion.amount}`}
+                  description={item.desc}
+                  image={'/images/loginplate.png'}
+                  tags={item.menu_item_tags.map((tag) => tag.tag.name)}
                   isDropdownActive={activeDropdown === index}
                   onDropdownToggle={() => handleDropdownToggle(index)}
                 />
@@ -43,14 +44,14 @@ const MenusFoodMenu = () => {
         </div>
         <div className="overflow-x-auto mt-4">
           <div className="flex gap-6">
-            {MenuData.SideDishes.map((item, index) => (
+            {menuData.SideDishes.map((item, index) => (
               <div key={index}>
                 <MenuItemCard
                   name={item.name}
-                  price={item.price}
-                  description={item.description}
-                  image={item.image}
-                  tags={item.tags}
+                  price={`₦${item.menu_item_portion_size[0]?.portion.amount}`}
+                  description={item.desc}
+                  image={"/images/menu/bread.png"}
+                  tags={item.menu_item_tags.map((tag) => tag.tag.name)}
                   isDropdownActive={activeDropdown === index}
                   onDropdownToggle={() => handleDropdownToggle(index)}
                 />
