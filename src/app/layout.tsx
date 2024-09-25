@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { UserProvider } from "../context/UserContext"; // Import UserProvider
+import { MenuProvider } from "../context/MenuContext"; // Import MenuProvider
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -21,7 +22,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <UserProvider>{children}</UserProvider>
+        <UserProvider>
+          <MenuProvider> {/* Wrap the app with MenuProvider */}
+            {children}
+          </MenuProvider>
+        </UserProvider>
       </body>
     </html>
   );
