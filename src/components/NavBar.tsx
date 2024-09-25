@@ -2,7 +2,8 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import Cookies from "js-cookie";
 
 const menuItems = [
   {
@@ -25,13 +26,20 @@ const Navbar = () => {
   const handleProfileClick = () => {
     setIsProfileOpen((prevState) => !prevState);
   };
-
+const router = useRouter()
   const closeModal = () => {
     setIsProfileOpen(false);
   };
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen((prev) => !prev);
+  };
+
+  const logoutUser = () => {
+    Cookies.remove("token");
+    Cookies.remove("token_expiry");
+
+    router.push("/");
   };
 
   return (
@@ -156,7 +164,7 @@ const Navbar = () => {
                 <span>Settings</span>
               </button>
 
-              <button className="flex items-center gap-2 text-gray-300 hover:text-white">
+              <button onClick={logoutUser} className="flex items-center gap-2 text-gray-300 hover:text-white">
                 <Image
                   src="/images/icons/logout.png"
                   alt="Logout"

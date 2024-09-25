@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
+import Loader from "./Loader";
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const router = useRouter();
@@ -19,9 +20,10 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center min-h-screen">
-        <div className="loader">Loading...</div>
-      </div>
+      // <div className="flex justify-center items-center min-h-screen">
+      //   <div className="loader">Loading...</div>
+      // </div>
+      <Loader />
     );
   }
 

@@ -1,60 +1,37 @@
 import { useState } from "react";
 import axios from "axios";
 import Cookies from "js-cookie";
-import { useRouter } from "next/navigation"; // Use Next.js router to redirect
 
 const BASE_URL = "https://test.bespoque.dev";
 
 export const useApi = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const router = useRouter();
 
-  const logoutUser = () => {
-    Cookies.remove("token");
-    Cookies.remove("token_expiry");
-    router.push("/");
-  };
-
-  const checkTokenExpiry = () => {
-    const expiryTime = Cookies.get("token_expiry");
-    if (expiryTime && new Date().getTime() > parseInt(expiryTime, 10)) {
-      logoutUser();
-    }
-  };
-
-  const request = async (
-    endpoint: string,
-    method: "GET" | "POST" | "PUT",
-    data?: any
-  ) => {
+  const request = async (endpoint: string, method: "GET" | "POST", params = {}) => {
     setLoading(true);
     setError(null);
 
-    checkTokenExpiry();
-
-    const token = Cookies.get("token");
+    const token = Cookies.get("token"); // Ensure token is securely stored
 
     try {
       const response = await axios({
         url: `${BASE_URL}${endpoint}`,
         method,
-        data,
         headers: {
           "Content-Type": "application/json",
-          ...(token && { Authorization: `Bearer ${token}` }),
+          "UserId": "admin@gmail.com",
+          "UserType": "1",
+          Authorization: `Bearer ${token}`, // Secure API with token
         },
+        params, // Pass query parameters here (like category_id)
       });
 
       setLoading(false);
       return response.data;
     } catch (err: any) {
+      setError("An error occurred. Please try again.");
       setLoading(false);
-      if (err.response?.status === 401) {
-        logoutUser();
-      } else {
-        setError("An error occurred");
-      }
       throw err;
     }
   };
