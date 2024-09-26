@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { usePortionSizes } from "@/src/hooks/usePortionSizes";
 import { useTags } from "@/src/hooks/useTags"; // Assuming you have a hook for tags
-import { FiDelete } from "react-icons/fi";
+import { useAddOns } from "@/src/hooks/useAddOns"; // Assuming you have a hook for add-ons
+import { useSides } from "@/src/hooks/useSides"; // Assuming you have a hook for sides
 import { FaTrash } from "react-icons/fa";
-
 
 interface AddMenuItemFormProps {
   menuType: string;
@@ -15,20 +15,66 @@ const AddMenuItemForm: React.FC<AddMenuItemFormProps> = ({ menuType }) => {
   const [sizeOptions, setSizeOptions] = useState([
     { sizeId: "", size: "", price: "" },
   ]);
+  const [addOnOptions, setAddOnOptions] = useState([
+    { addOnId: "", addOnName: "", addOnPrice: "" },
+  ]);
+  const [sideOptions, setSideOptions] = useState([
+    { sideId: "", sideName: "", sidePrice: "" },
+  ]);
   const [availability, setAvailability] = useState("In Stock");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [itemPhoto, setItemPhoto] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
 
   const {
     portionSizes,
     loading: portionLoading,
     error: portionError,
   } = usePortionSizes();
-  const { tags, loading: tagsLoading, error: tagsError } = useTags(); // Hook to fetch tags
+  const { tags, loading: tagsLoading, error: tagsError } = useTags();
+  const { addOns, loading: addOnsLoading, error: addOnsError } = useAddOns();
+  const { sides, loading: sidesLoading, error: sidesError } = useSides();
 
   // Add new portion size option
   const handleAddSizeOption = () => {
     setSizeOptions([...sizeOptions, { sizeId: "", size: "", price: "" }]);
+  };
+
+  // Image upload and preview handler
+  const handleFileChange = (file: File | null) => {
+    setItemPhoto(file);
+    if (file) {
+      setImagePreview(URL.createObjectURL(file));
+    } else {
+      setImagePreview(null);
+    }
+  };
+
+  // Handle drag-and-drop events
+  const handleDrop = (event: React.DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    const file = event.dataTransfer.files[0];
+    if (file && file.type.startsWith("image/")) {
+      handleFileChange(file);
+    }
+  };
+
+  const handleDragOver = (event: React.DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
+  };
+
+  // Handle clicking on the file input directly
+  const handleFileInputClick = () => {
+    const input = document.getElementById("fileInput") as HTMLInputElement;
+    if (input) {
+      input.click();
+    }
+  };
+
+  // Handle file input without resetting value
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] || null;
+    handleFileChange(file);
   };
 
   // Update portion size or price when size is selected
@@ -53,10 +99,82 @@ const AddMenuItemForm: React.FC<AddMenuItemFormProps> = ({ menuType }) => {
     setSizeOptions(updatedOptions);
   };
 
+  // Add new add-on option
+  const handleAddAddOnOption = () => {
+    setAddOnOptions([
+      ...addOnOptions,
+      { addOnId: "", addOnName: "", addOnPrice: "" },
+    ]);
+  };
+
+  // Update add-on when selected
+  const handleAddOnChange = (index: number, field: string, value: string) => {
+    const updatedOptions = addOnOptions.map((option, i) => {
+      if (i === index) {
+        if (field === "addOnId") {
+          const selectedAddOn = addOns.find(
+            (addOn) => addOn.id === parseInt(value)
+          );
+          return {
+            ...option,
+            addOnId: value,
+            addOnName: selectedAddOn?.name || "",
+            addOnPrice: selectedAddOn?.amount || "",
+          };
+        }
+        return { ...option, [field]: value };
+      }
+      return option;
+    });
+    setAddOnOptions(updatedOptions);
+  };
+
+  // Add new side option
+  const handleAddSideOption = () => {
+    setSideOptions([
+      ...sideOptions,
+      { sideId: "", sideName: "", sidePrice: "" },
+    ]);
+  };
+
+  // Update side when selected
+  const handleSideChange = (index: number, field: string, value: string) => {
+    const updatedOptions = sideOptions.map((option, i) => {
+      if (i === index) {
+        if (field === "sideId") {
+          const selectedSide = sides.find(
+            (side) => side.id === parseInt(value)
+          );
+          return {
+            ...option,
+            sideId: value,
+            sideName: selectedSide?.name || "",
+            sidePrice: selectedSide?.amount || "",
+          };
+        }
+        return { ...option, [field]: value };
+      }
+      return option;
+    });
+    setSideOptions(updatedOptions);
+  };
+
   // Delete portion size option
   const handleDeleteSizeOption = (index: number) => {
     const updatedOptions = sizeOptions.filter((_, i) => i !== index);
     setSizeOptions(updatedOptions);
+  };
+
+  // Delete add-on option
+  const handleDeleteAddOnOption = (index: number) => {
+    const updatedOptions = addOnOptions.filter((_, i) => i !== index);
+    setAddOnOptions(updatedOptions);
+  };
+
+  // Delete side option
+  const handleDeleteSideOption = (index: number) => {
+    const updatedOptions = sideOptions.filter((_, i) => i !== index);
+    setSideOptions(updatedOptions);
   };
 
   // Handle tag selection
@@ -73,10 +191,16 @@ const AddMenuItemForm: React.FC<AddMenuItemFormProps> = ({ menuType }) => {
       <h2 className="text-2xl font-bold mb-6">
         Add New Menu Item - {menuType}
       </h2>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <div>
-          {/* Item Name */}
+      <div className="mt-6 flex justify-end">
+        <button
+          className="px-4 py-2 bg-paleGreen font-semibold text-black shadow-lg rounded-lg"
+          onClick={() => console.log("Submit form")}
+        >
+          Add to menu
+        </button>
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-5 gap-8">
+        <div className="md:col-span-2">
           <div className="mb-4">
             <label className="block text-sm font-semibold mb-1">
               Item Name*
@@ -90,9 +214,8 @@ const AddMenuItemForm: React.FC<AddMenuItemFormProps> = ({ menuType }) => {
             />
           </div>
 
-          {/* Description */}
-          <div className="mb-4">
-            <label className="block text-sm font-semibold mb-1">
+          <div className="mb-4 space-y-2">
+            <label className="block text-sm font-semibold mb-1 ">
               Brief Description of Item* (Max 15 words)
             </label>
             <textarea
@@ -107,12 +230,11 @@ const AddMenuItemForm: React.FC<AddMenuItemFormProps> = ({ menuType }) => {
           {/* Portion Sizes */}
           <div className="mb-4">
             <label className="block text-sm font-semibold mb-2">
-              Portion (Size)*
+              Portion Size*
             </label>
-            <div className="flex flex-col space-y-2">
+            <div className="flex flex-col space-y-2 border shadow-sm p-2">
               {sizeOptions.map((option, index) => (
                 <div key={index} className="flex space-x-2 items-center">
-                  {/* Portion Size Dropdown */}
                   <select
                     value={option.sizeId}
                     onChange={(e) =>
@@ -127,10 +249,9 @@ const AddMenuItemForm: React.FC<AddMenuItemFormProps> = ({ menuType }) => {
                       </option>
                     ))}
                   </select>
-
-                  {/* Price Input (Auto-filled) */}
                   <input
                     type="text"
+                    readOnly
                     value={option.price}
                     onChange={(e) =>
                       handleSizeChange(index, "price", e.target.value)
@@ -138,7 +259,6 @@ const AddMenuItemForm: React.FC<AddMenuItemFormProps> = ({ menuType }) => {
                     className="w-1/3 p-1 border rounded"
                     placeholder="₦ Price"
                   />
-
                   <button
                     onClick={() => handleDeleteSizeOption(index)}
                     className="text-red-500 hover:text-red-700"
@@ -156,12 +276,107 @@ const AddMenuItemForm: React.FC<AddMenuItemFormProps> = ({ menuType }) => {
               </button>
             </div>
           </div>
+
+          {/* Add-Ons */}
+          <div className="mb-4">
+            <label className="block text-sm font-semibold mb-2">Add-Ons*</label>
+            <div className="flex flex-col space-y-2 border shadow-sm p-2">
+              {addOnOptions.map((option, index) => (
+                <div key={index} className="flex space-x-2 items-center">
+                  <select
+                    value={option.addOnId}
+                    onChange={(e) =>
+                      handleAddOnChange(index, "addOnId", e.target.value)
+                    }
+                    className="w-1/3 p-1 border rounded"
+                  >
+                    <option value="">Select Add-On</option>
+                    {addOns.map((addOn) => (
+                      <option key={addOn.id} value={addOn.id}>
+                        {addOn.name}
+                      </option>
+                    ))}
+                  </select>
+                  <input
+                    type="text"
+                    readOnly
+                    value={option.addOnPrice}
+                    onChange={(e) =>
+                      handleAddOnChange(index, "addOnPrice", e.target.value)
+                    }
+                    className="w-1/3 p-1 border rounded"
+                    placeholder="₦ Price"
+                  />
+                  <button
+                    onClick={() => handleDeleteAddOnOption(index)}
+                    className="text-red-500 hover:text-red-700"
+                    title="Delete this add-on option"
+                  >
+                    <FaTrash />
+                  </button>
+                </div>
+              ))}
+              <button
+                onClick={handleAddAddOnOption}
+                className="text-green-600 mt-2"
+              >
+                + Add new add-on option
+              </button>
+            </div>
+          </div>
+
+          {/* Sides */}
+          <div className="mb-4">
+            <label className="block text-sm font-semibold mb-2">Sides*</label>
+            <div className="flex flex-col space-y-2 border shadow-sm p-2">
+              {sideOptions.map((option, index) => (
+                <div key={index} className="flex space-x-2 items-center">
+                  <select
+                    value={option.sideId}
+                    onChange={(e) =>
+                      handleSideChange(index, "sideId", e.target.value)
+                    }
+                    className="w-1/3 p-1 border rounded"
+                  >
+                    <option value="">Select Side</option>
+                    {sides.map((side) => (
+                      <option key={side.id} value={side.id}>
+                        {side.name}
+                      </option>
+                    ))}
+                  </select>
+                  <input
+                    type="text"
+                    readOnly
+                    value={option.sidePrice}
+                    onChange={(e) =>
+                      handleSideChange(index, "sidePrice", e.target.value)
+                    }
+                    className="w-1/3 p-1 border rounded"
+                    placeholder="₦ Price"
+                  />
+                  <button
+                    onClick={() => handleDeleteSideOption(index)}
+                    className="text-red-500 hover:text-red-700"
+                    title="Delete this side option"
+                  >
+                    <FaTrash />
+                  </button>
+                </div>
+              ))}
+              <button
+                onClick={handleAddSideOption}
+                className="text-green-600 mt-2"
+              >
+                + Add new side option
+              </button>
+            </div>
+          </div>
         </div>
 
-        <div>
-          {/* Availability */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-            <div>
+        <div className="md:col-span-3">
+          <div className="grid grid-cols-2 gap-2">
+            <div className="mb-4">
               <label className="block text-sm font-semibold mb-1">
                 Availability*
               </label>
@@ -174,67 +389,68 @@ const AddMenuItemForm: React.FC<AddMenuItemFormProps> = ({ menuType }) => {
                 <option value="Out of Stock">Out of Stock</option>
               </select>
             </div>
-
-            {/* Tags */}
-            <div>
-              <label className="block text-sm font-semibold mb-1">Tags*</label>
-              <div className="flex flex-wrap">
-                {tagsLoading ? (
-                  <p>Loading tags...</p>
-                ) : (
-                  tags.map((tag) => (
-                    <label key={tag.id} className="mr-4 mb-2">
-                      <input
-                        type="checkbox"
-                        value={tag.id.toString()} // Convert tag.id to string
-                        checked={selectedTags.includes(tag.id.toString())} // Ensure the comparison works
-                        onChange={() => handleTagChange(tag.id.toString())} // Convert tag.id to string
-                      />
+            <div className="mb-4">
+              <label className="block text-sm font-semibold mb-2">Tags</label>
+              <div className="flex flex-wrap gap-2">
+                {tags.map((tag) => (
+                  <div key={tag.id} className="flex items-center">
+                    <input
+                      type="checkbox"
+                      id={tag.id.toString()}
+                      checked={selectedTags.includes(tag.id.toString())}
+                      onChange={() => handleTagChange(tag.id.toString())}
+                    />
+                    <label htmlFor={tag.id.toString()} className="ml-1">
                       {tag.name}
                     </label>
-                  ))
-                )}
+                  </div>
+                ))}
               </div>
             </div>
           </div>
-
-          {/* Item Photo */}
-          <div className="mb-4">
-            <label className="block text-sm font-semibold mb-1">
-              Item Photo
-            </label>
-            <div className="border-2 border-dashed border-gray-300 p-4 flex justify-center items-center">
-              <input
-                type="file"
-                onChange={(e) => {
-                  if (e.target.files) setItemPhoto(e.target.files[0]);
-                }}
-                className="hidden"
-                id="itemPhotoUpload"
-              />
-              <label
-                htmlFor="itemPhotoUpload"
-                className="cursor-pointer flex flex-col items-center"
-              >
-                {itemPhoto ? (
-                  <p>{itemPhoto.name}</p>
-                ) : (
-                  <>
-                    <span className="text-gray-500">+</span>
-                    <p className="text-gray-400">Upload or Drag Item Photo</p>
-                  </>
-                )}
+          {/* Item Photo with Preview and Drag-and-Drop */}
+          <div className="md:col-span-3">
+            <div className="mb-4">
+              <label className="block text-sm font-semibold mb-1">
+                Upload Item Photo*
               </label>
+
+              <div
+                onDragOver={handleDragOver}
+                onDrop={handleDrop}
+                onClick={handleFileInputClick} // Attach click handler to the container
+                className="border rounded-md border-gray-400 p-4 flex justify-center items-center cursor-pointer"
+                style={{ height: "400px", position: "relative" }}
+              >
+                {imagePreview ? (
+                  // Click the image to open the file picker
+                  <img
+                    src={imagePreview}
+                    alt="Preview"
+                    className="max-h-full max-w-full cursor-pointer"
+                    onClick={(e) => {
+                      e.stopPropagation(); // Prevent the click from bubbling to the parent
+                      handleFileInputClick();
+                    }}
+                  />
+                ) : (
+                  <p onClick={handleFileInputClick}>
+                    Drag & Drop or Click to Upload
+                  </p>
+                )}
+
+                {/* Hidden input for file upload */}
+                <input
+                  id="fileInput"
+                  type="file"
+                  onChange={handleInputChange}
+                  className="hidden"
+                  accept="image/*"
+                />
+              </div>
             </div>
           </div>
         </div>
-      </div>
-
-      {/* Submit Button */}
-      <div className="flex justify-end mt-6">
-        <button className="bg-green-500 text-white py-2 px-6 rounded shadow">
-          Add this Item
-        </button>
       </div>
     </div>
   );

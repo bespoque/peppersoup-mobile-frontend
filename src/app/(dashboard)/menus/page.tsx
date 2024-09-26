@@ -39,7 +39,7 @@ export default function Menus() {
             <button
               ref={buttonRef}
               onClick={togglePopup}
-              className="bg-paleGreen text-black py-2 px-4 rounded shadow"
+              className="bg-paleGreen font-semibold text-black py-2 px-4 rounded shadow"
             >
               Add New Menu Item
             </button>
