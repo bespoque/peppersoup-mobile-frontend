@@ -186,15 +186,49 @@ const AddMenuItemForm: React.FC<AddMenuItemFormProps> = ({ menuType }) => {
     }
   };
 
+  const handleSubmit = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    e.preventDefault();
+
+    // Determine category_id based on menuType
+    let category_id = 0;
+    if (menuType === "Peppersoup") {
+      category_id = 1;
+    } else if (menuType === "Sides") {
+      category_id = 2;
+    } else if (menuType === "Drinks") {
+      category_id = 3;
+    }
+
+    // Set availability as 1 if "In Stock", otherwise 0
+    const availabilityValue = availability === "In Stock" ? 1 : 0;
+
+    // Prepare payload
+    const payload = {
+      itemName,
+      description,
+      availability: availabilityValue, // 1 or 0 based on stock status
+      category_id, // 1, 2, or 3 based on menuType
+      selectedTags: selectedTags.map((tagId) => parseInt(tagId, 10)), // Ensure tag IDs are numbers
+      itemPhoto: itemPhoto ? [itemPhoto] : [], // Ensure file is in an array
+      sizeOptions: sizeOptions.map((option) => parseInt(option.sizeId, 10)), // Only IDs as numbers
+      addOnOptions: addOnOptions.map((option) => parseInt(option.addOnId, 10)), // Only IDs as numbers
+      sideOptions: sideOptions.map((option) => parseInt(option.sideId, 10)), // Only IDs as numbers
+    };
+
+    console.log("Payload to be submitted:", payload);
+    // Send payload to API here...
+  };
+
   return (
     <div className="p-8 bg-white rounded-lg border m-2 shadow-lg">
       <h2 className="text-2xl font-bold mb-6">
         Add New Menu Item - {menuType}
       </h2>
+      {/* <form> */}
       <div className="mt-6 flex justify-end">
         <button
           className="px-4 py-2 bg-paleGreen font-semibold text-black shadow-lg rounded-lg"
-          onClick={() => console.log("Submit form")}
+          onClick={handleSubmit}
         >
           Add to menu
         </button>
@@ -452,6 +486,7 @@ const AddMenuItemForm: React.FC<AddMenuItemFormProps> = ({ menuType }) => {
           </div>
         </div>
       </div>
+      {/* </form> */}
     </div>
   );
 };
