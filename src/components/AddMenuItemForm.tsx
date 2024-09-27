@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { usePortionSizes } from "@/src/hooks/usePortionSizes";
-import { useTags } from "@/src/hooks/useTags"; // Assuming you have a hook for tags
-import { useAddOns } from "@/src/hooks/useAddOns"; // Assuming you have a hook for add-ons
-import { useSides } from "@/src/hooks/useSides"; // Assuming you have a hook for sides
+import { usePortionSizes } from "@/src/context/PortionSizesContext";
+import { useTags } from "@/src/context/TagsContext"; 
+import { useAddOns } from "@/src/context/AddonsContext"; 
+import { useSides } from "@/src/context/SidesContext"; 
 import { FaTrash } from "react-icons/fa";
 
 interface AddMenuItemFormProps {
@@ -27,14 +27,12 @@ const AddMenuItemForm: React.FC<AddMenuItemFormProps> = ({ menuType }) => {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
 
   const {
-    portionSizes,
-    loading: portionLoading,
-    error: portionError,
+    portionSizes
   } = usePortionSizes();
-  const { tags, loading: tagsLoading, error: tagsError } = useTags();
-  const { addOns, loading: addOnsLoading, error: addOnsError } = useAddOns();
-  const { sides, loading: sidesLoading, error: sidesError } = useSides();
-
+  const { tags } = useTags();
+  const { addOns } = useAddOns();
+  const { sides } = useSides();
+  
   // Add new portion size option
   const handleAddSizeOption = (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>
@@ -217,12 +215,21 @@ const AddMenuItemForm: React.FC<AddMenuItemFormProps> = ({ menuType }) => {
       description,
       availability: availabilityValue, // 1 or 0 based on stock status
       category_id, // 1, 2, or 3 based on menuType
-      selectedTags: selectedTags.map((tagId) => parseInt(tagId, 10)), // Ensure tag IDs are numbers
+      selectedTags: selectedTags
+        .map((tagId) => parseInt(tagId, 10))
+        .filter((tagId) => !isNaN(tagId)), // Ensure valid tag IDs
       itemPhoto: itemPhoto ? [itemPhoto] : [], // Ensure file is in an array
-      sizeOptions: sizeOptions.map((option) => parseInt(option.sizeId, 10)), // Only IDs as numbers
-      addOnOptions: addOnOptions.map((option) => parseInt(option.addOnId, 10)), // Only IDs as numbers
-      sideOptions: sideOptions.map((option) => parseInt(option.sideId, 10)), // Only IDs as numbers
+      sizeOptions: sizeOptions
+        .map((option) => parseInt(option.sizeId, 10))
+        .filter((sizeId) => !isNaN(sizeId)), // Ensure valid size IDs
+      addOnOptions: addOnOptions
+        .map((option) => parseInt(option.addOnId, 10))
+        .filter((addOnId) => !isNaN(addOnId)), // Ensure valid add-on IDs
+      sideOptions: sideOptions
+        .map((option) => parseInt(option.sideId, 10))
+        .filter((sideId) => !isNaN(sideId)), // Ensure valid side IDs
     };
+    
 
     console.log("Payload to be submitted:", payload);
     // Send payload to API here...

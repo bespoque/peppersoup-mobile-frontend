@@ -1,5 +1,5 @@
 "use client"
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, ReactNode, useMemo } from 'react';
 import { useApi } from '@/src/hooks/useApi';
 
 interface MenuItem {
@@ -9,6 +9,16 @@ interface MenuItem {
   menu_item_images: { image_link: string }[];
   menu_item_portion_size: { portion: { amount: number } }[];
   menu_item_tags: { tag: { name: string } }[];
+}
+
+interface ApiResponse {
+  resp_code: string;
+  data: {
+    title: string;
+    items: {
+      data: MenuItem[];
+    };
+  }[];
 }
 
 interface MenuData {
@@ -43,14 +53,14 @@ export const MenuProvider = ({ children }: { children: ReactNode }) => {
   const [error, setError] = useState<string | null>(null);
   const { request } = useApi();
 
-  const categorizeMenuItems = (data: any) => {
+  const categorizeMenuItems = (data: ApiResponse['data']) => {
     const categorizedData: MenuData = {
       PepperSoup: [],
       SideDishes: [],
       Drinks: [],
     };
 
-    data.forEach((category: any) => {
+    data.forEach((category) => {
       if (category.title === 'PepperSoup') {
         categorizedData.PepperSoup = category.items.data;
       } else if (category.title === 'Side Dishes') {
@@ -66,25 +76,28 @@ export const MenuProvider = ({ children }: { children: ReactNode }) => {
   const fetchMenuItems = async () => {
     setLoading(true);
     try {
-      const response = await request('/api/core/kitchen-operations/menu-items/all', 'GET');
+      const response = await request('/api/core/kitchen-operations/menu-items/all', 'GET') as ApiResponse; // Type assertion here
       if (response?.resp_code === '00') {
         categorizeMenuItems(response.data);
       } else {
         setError('Failed to fetch menu items');
       }
     } catch (err) {
-      setError('Error fetching menu items');
+      setError((err as Error).message || 'Error fetching menu items'); // Ensure `err` is typed correctly
     } finally {
       setLoading(false);
     }
   };
+  
 
   useEffect(() => {
     fetchMenuItems();
   }, []);
 
+  const value = useMemo(() => ({ menuData, loading, error }), [menuData, loading, error]);
+
   return (
-    <MenuContext.Provider value={{ menuData, loading, error }}>
+    <MenuContext.Provider value={value}>
       {children}
     </MenuContext.Provider>
   );

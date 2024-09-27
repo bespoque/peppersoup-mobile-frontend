@@ -1,29 +1,32 @@
-import { useState, useEffect } from 'react';
-import { useApi } from '@/src/hooks/useApi';
+// import { useState, useEffect, useRef } from 'react';
+// import { useApi } from '@/src/hooks/useApi';
 
-interface Tag {
-  id: number;
-  name: string;
-}
+// interface Tag {
+//   id: number;
+//   name: string;
+// }
 
-export const useTags = () => {
-  const [tags, setTags] = useState<Tag[]>([]);
-  const { request, loading, error } = useApi();
+// export const useTags = () => {
+//   const { request } = useApi();
+//   const [tags, setTags] = useState<Tag[]>([]);
+//   const hasFetched = useRef(false);
 
-  const fetchTags = async () => {
-    try {
-      const response = await request("/api/core/kitchen-operations/tag/all", "GET");
-      if (response?.resp_code === "00") {
-        setTags(response.data);
-      }
-    } catch (error) {
-      console.error("Error fetching tags:", error);
-    }
-  };
+//   useEffect(() => {
+//     const fetchTags = async () => {
+//       if (hasFetched.current) return;
+//       try {
+//         const response = await request("/api/core/kitchen-operations/tag/all", "GET");
+//         if (response?.resp_code === "00") {
+//           setTags(response.data);
+//           hasFetched.current = true; 
+//         }
+//       } catch (error) {
+//         console.error("Error fetching tags:", error);
+//       }
+//     };
 
-  useEffect(() => {
-    fetchTags();
-  }, []);
+//     fetchTags();
+//   }, [request]);
 
-  return { tags, loading, error };
-};
+//   return { tags };
+// };

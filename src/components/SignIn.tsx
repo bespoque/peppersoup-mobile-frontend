@@ -20,7 +20,7 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
   setLoginError(""); 
 
   try {
-    const data = await request("/api/core/account/login", "POST", {
+    const data = await request("/api/core/account/login", "POST", {}, {
       email,
       password,
     });

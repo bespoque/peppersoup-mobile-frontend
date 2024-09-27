@@ -8,11 +8,16 @@ export const useApi = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const request = async (endpoint: string, method: "GET" | "POST", params = {}) => {
+  const request = async (
+    endpoint: string, 
+    method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE", 
+    params = {}, 
+    data = {} // Add a data parameter to handle request body
+  ) => {
     setLoading(true);
     setError(null);
 
-    const token = Cookies.get("token"); 
+    const token = Cookies.get("token"); // Assuming the token is stored in cookies
 
     try {
       const response = await axios({
@@ -20,11 +25,12 @@ export const useApi = () => {
         method,
         headers: {
           "Content-Type": "application/json",
-          "UserId": "admin@gmail.com",
+          "UserId": "admin@gmail.com", // Replace with dynamic value if necessary
           "UserType": "1",
           Authorization: `Bearer ${token}`,
         },
-        params, 
+        params: method === "GET" ? params : {}, // Only send params for GET requests
+        data: method !== "GET" ? data : {}, // Send data for non-GET requests (POST, PUT, etc.)
       });
 
       setLoading(false);
