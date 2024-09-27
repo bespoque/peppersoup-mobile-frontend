@@ -1,9 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { usePortionSizes } from "@/src/context/PortionSizesContext";
-import { useTags } from "@/src/context/TagsContext"; 
-import { useAddOns } from "@/src/context/AddonsContext"; 
-import { useSides } from "@/src/context/SidesContext"; 
+import { useTags } from "@/src/context/TagsContext";
+import { useAddOns } from "@/src/context/AddonsContext";
+import { useSides } from "@/src/context/SidesContext";
+import { useMenu } from "@/src/context/MenuContext"
 import { FaTrash } from "react-icons/fa";
+import { useApi } from "@/src/hooks/useApi";
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { useRouter } from "next/navigation";
+
+// toast.configure(); // Call it once in your app
 
 interface AddMenuItemFormProps {
   menuType: string;
@@ -12,6 +19,8 @@ interface AddMenuItemFormProps {
 const AddMenuItemForm: React.FC<AddMenuItemFormProps> = ({ menuType }) => {
   const [itemName, setItemName] = useState("");
   const [description, setDescription] = useState("");
+  const { request, loading } = useApi();
+  const { refreshMenuItems } = useMenu(); 
   const [sizeOptions, setSizeOptions] = useState([
     { sizeId: "", size: "", price: "" },
   ]);
@@ -25,14 +34,12 @@ const AddMenuItemForm: React.FC<AddMenuItemFormProps> = ({ menuType }) => {
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [itemPhoto, setItemPhoto] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
-
-  const {
-    portionSizes
-  } = usePortionSizes();
+const router = useRouter()
+  const { portionSizes } = usePortionSizes();
   const { tags } = useTags();
   const { addOns } = useAddOns();
   const { sides } = useSides();
-  
+
   // Add new portion size option
   const handleAddSizeOption = (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>
@@ -193,9 +200,10 @@ const AddMenuItemForm: React.FC<AddMenuItemFormProps> = ({ menuType }) => {
     }
   };
 
-  const handleSubmit = (e: React.MouseEvent<HTMLFormElement, MouseEvent>) => {
+  const handleSubmit = async (e: React.MouseEvent<HTMLFormElement, MouseEvent>) => {
     e.preventDefault();
 
+    
     // Determine category_id based on menuType
     let category_id = 0;
     if (menuType === "Peppersoup") {
@@ -211,25 +219,75 @@ const AddMenuItemForm: React.FC<AddMenuItemFormProps> = ({ menuType }) => {
 
     // Prepare payload
     const payload = {
-      itemName,
-      description,
+      title: itemName,
+      desc: description,
       availability: availabilityValue, // 1 or 0 based on stock status
       category_id, // 1, 2, or 3 based on menuType
-      selectedTags: selectedTags
+      tag_ids: selectedTags
         .map((tagId) => parseInt(tagId, 10))
         .filter((tagId) => !isNaN(tagId)), // Ensure valid tag IDs
-      itemPhoto: itemPhoto ? [itemPhoto] : [], // Ensure file is in an array
-      sizeOptions: sizeOptions
+      menu_item_images: itemPhoto ? [itemPhoto] : [], // Ensure file is in an array
+      portion_size_ids: sizeOptions
         .map((option) => parseInt(option.sizeId, 10))
         .filter((sizeId) => !isNaN(sizeId)), // Ensure valid size IDs
-      addOnOptions: addOnOptions
+      addson_ids: addOnOptions
         .map((option) => parseInt(option.addOnId, 10))
         .filter((addOnId) => !isNaN(addOnId)), // Ensure valid add-on IDs
-      sideOptions: sideOptions
-        .map((option) => parseInt(option.sideId, 10))
-        .filter((sideId) => !isNaN(sideId)), // Ensure valid side IDs
+      // sideOptions: sideOptions
+      //   .map((option) => parseInt(option.sideId, 10))
+      //   .filter((sideId) => !isNaN(sideId)), // Ensure valid side IDs
     };
-    
+;
+    const formData = new FormData();
+
+    // Append each property to the FormData
+    formData.append('title', payload.title);
+    formData.append('desc', payload.desc);
+    formData.append('availability', availability); // FormData values are strings
+    formData.append('category_id', payload.category_id.toString());
+
+    // Append tag_ids as a comma-separated string or as individual entries
+    payload.tag_ids.forEach(tagId => formData.append('tag_ids[]', tagId.toString()));
+
+    // Append menu_item_images if they are files
+    payload.menu_item_images.forEach((image) => {
+      formData.append('menu_item_images[]', image);
+    });
+
+    // Append portion_size_ids
+    payload.portion_size_ids.forEach(portionSizeId => formData.append('portion_size_ids[]', portionSizeId.toString()));
+
+    // Append addson_ids
+    payload.addson_ids.forEach(addonId => formData.append('addson_ids[]', addonId.toString()));
+
+    try {
+      const response = await request(
+        '/api/core/kitchen-operations/menu-items/create', 
+        'POST', 
+        {}, 
+        formData
+      );
+
+      if (response && response.resp_code === '00') {
+        toast.success('Menu item added successfully!');
+        await refreshMenuItems(); // Refresh menu items after successful addition
+        router.push('/home')
+        // Reset the form or handle state reset as needed
+        // setTitle('');
+        // setDesc('');
+        // setAvailability(1); // Reset to default if necessary
+        // setCategoryId(1); // Reset to default if necessary
+        // setTagIds([]);
+        // setMenuItemImages([]);
+        // setPortionSizeIds([]);
+        // setAddsonIds([]);
+      } else {
+        toast.error('Failed to add menu item');
+      }
+    } catch (error) {
+      toast.error('An error occurred. Please try again.');
+      console.error('Error adding menu item:', error);
+    }
 
     console.log("Payload to be submitted:", payload);
     // Send payload to API here...
@@ -242,8 +300,10 @@ const AddMenuItemForm: React.FC<AddMenuItemFormProps> = ({ menuType }) => {
       </h2>
       <form onSubmit={handleSubmit}>
         <div className="mt-6 flex justify-end">
-          <button className="px-4 py-2 bg-paleGreen font-semibold text-black shadow-lg rounded-lg">
-            Add to menu
+          <button className="px-4 py-2 bg-paleGreen font-semibold text-black shadow-lg rounded-lg"
+          disabled={loading}
+          >
+              {loading ? 'Adding...' : 'Add to menu'}
           </button>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-5 gap-8">

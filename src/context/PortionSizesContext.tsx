@@ -1,24 +1,18 @@
 "use client"
-import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
+import React, { createContext, useContext, useEffect, useRef, useState, useMemo } from 'react';
 import { useApi } from '../hooks/useApi';
-// Adjust the import path as necessary
 
 interface PortionSize {
   id: number;
-  user_id: number;
   name: string;
-  url: string;
   amount: string;
-  status: string;
-  created_at: string;
-  updated_at: string;
 }
 
 interface PortionSizesContextType {
   portionSizes: PortionSize[];
   loading: boolean;
   error: string | null;
-  addPortionSize: (portionSize: Omit<PortionSize, 'id' | 'user_id' | 'created_at' | 'updated_at'>) => Promise<void>;
+  addPortionSize: (portionSize: Omit<PortionSize, 'id'>) => Promise<void>;
 }
 
 const PortionSizesContext = createContext<PortionSizesContextType | undefined>(undefined);
@@ -27,38 +21,47 @@ export const PortionSizesProvider: React.FC<{ children: React.ReactNode }> = ({ 
   const { request, loading, error } = useApi();
   const [portionSizes, setPortionSizes] = useState<PortionSize[]>([]);
   const hasFetched = useRef(false);
+
   useEffect(() => {
     const fetchPortionSizes = async () => {
-        if (hasFetched.current) return;
-        try {
-          const data = await request('/api/core/kitchen-operations/portion-size/all', 'GET');
-          if (data.resp_code === "00") {
-            setPortionSizes(data.data.map((item: any) => ({
-              id: item.id,
-              name: item.name,
-              amount: item.amount,
-            })));
-            hasFetched.current = true;
-          }
-        } catch (err) {
-          console.error("Failed to fetch portion sizes:", err);
+      if (hasFetched.current) return;
+      try {
+        const data = await request('/api/core/kitchen-operations/portion-size/all', 'GET');
+        if (data.resp_code === '00') {
+          setPortionSizes(data.data.map((item: any) => ({
+            id: item.id,
+            name: item.name,
+            amount: item.amount,
+          })));
+          hasFetched.current = true;
         }
+      } catch (err) {
+        console.error('Failed to fetch portion sizes:', err);
+      }
     };
 
     fetchPortionSizes();
   }, [request]);
 
-  const addPortionSize = async (portionSize: Omit<PortionSize, 'id' | 'user_id' | 'created_at' | 'updated_at'>) => {
+  const addPortionSize = async (portionSize: Omit<PortionSize, 'id'>) => {
     try {
       const response = await request('api/core/kitchen-operations/portion-size', 'POST', {}, portionSize);
       setPortionSizes((prevPortionSizes) => [...prevPortionSizes, response]);
     } catch (err) {
-      // Handle the error if needed
+      console.error('Failed to add portion size:', err);
     }
   };
 
+  // Memoize the value passed to the provider
+  const value = useMemo(() => ({
+    portionSizes,
+    loading,
+    error,
+    addPortionSize,
+  }), [portionSizes, loading, error]);
+
   return (
-    <PortionSizesContext.Provider value={{ portionSizes, loading, error, addPortionSize }}>
+    <PortionSizesContext.Provider value={value}>
       {children}
     </PortionSizesContext.Provider>
   );

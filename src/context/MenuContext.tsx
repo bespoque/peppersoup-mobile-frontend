@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import { createContext, useContext, useState, useEffect, ReactNode, useMemo } from 'react';
 import { useApi } from '@/src/hooks/useApi';
 
@@ -31,6 +31,7 @@ interface MenuContextProps {
   menuData: MenuData;
   loading: boolean;
   error: string | null;
+  refreshMenuItems: () => Promise<void>; // Add refresh function type
 }
 
 const MenuContext = createContext<MenuContextProps | undefined>(undefined);
@@ -88,13 +89,22 @@ export const MenuProvider = ({ children }: { children: ReactNode }) => {
       setLoading(false);
     }
   };
-  
+
+  // New function to refresh menu items
+  const refreshMenuItems = async () => {
+    await fetchMenuItems(); // Reuse the existing fetch function
+  };
 
   useEffect(() => {
     fetchMenuItems();
   }, []);
 
-  const value = useMemo(() => ({ menuData, loading, error }), [menuData, loading, error]);
+  const value = useMemo(() => ({
+    menuData,
+    loading,
+    error,
+    refreshMenuItems, // Include the refresh function in the context value
+  }), [menuData, loading, error]);
 
   return (
     <MenuContext.Provider value={value}>

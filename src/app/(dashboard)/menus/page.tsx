@@ -2,6 +2,8 @@
 import MenusFoodMenu from "@/src/components/MenusFoodMenuTabs";
 import AddMenuItemForm from "@/src/components/AddMenuItemForm";
 import React, { useRef, useState } from "react";
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function Menus() {
   const [showPopup, setShowPopup] = useState(false);
@@ -55,18 +57,18 @@ export default function Menus() {
               }}
             >
               <ul className="space-y-2">
-                <li>
-                  <button onClick={() => handleMenuSelection("Peppersoup")}>
+                <li className="hover:bg-paleGreen rounded-md">
+                  <button className="p-1" onClick={() => handleMenuSelection("Peppersoup")}>
                     To Peppersoup Menu
                   </button>
                 </li>
-                <li>
-                  <button onClick={() => handleMenuSelection("Sides")}>
+                <li className="hover:bg-paleGreen rounded-md">
+                  <button className="p-1" onClick={() => handleMenuSelection("Sides")}>
                     To Sides Menu
                   </button>
                 </li>
-                <li>
-                  <button onClick={() => handleMenuSelection("Drinks")}>
+                <li className="hover:bg-paleGreen rounded-md">
+                  <button className="p-1" onClick={() => handleMenuSelection("Drinks")}>
                     To Drinks Menu
                   </button>
                 </li>

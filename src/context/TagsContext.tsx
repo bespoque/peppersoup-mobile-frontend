@@ -1,21 +1,17 @@
 "use client"
-import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
+import React, { createContext, useContext, useEffect, useRef, useState, useMemo } from 'react';
 import { useApi } from '../hooks/useApi';
 
 interface Tag {
   id: number;
-  user_id: number;
   name: string;
-  url: string;
-  created_at: string;
-  updated_at: string;
 }
 
 interface TagsContextType {
   tags: Tag[];
   loading: boolean;
   error: string | null;
-  addTag: (tag: Omit<Tag, 'id' | 'user_id' | 'created_at' | 'updated_at'>) => Promise<void>;
+  addTag: (tag: Omit<Tag, 'id'>) => Promise<void>;
 }
 
 const TagsContext = createContext<TagsContextType | undefined>(undefined);
@@ -29,30 +25,41 @@ export const TagsProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const fetchTags = async () => {
       if (hasFetched.current) return;
       try {
-        const response = await request("/api/core/kitchen-operations/tag/all", "GET");
-        if (response?.resp_code === "00") {
-          setTags(response.data);
-          hasFetched.current = true; 
+        const data = await request('/api/core/kitchen-operations/tag/all', 'GET');
+        if (data.resp_code === '00') {
+          setTags(data.data.map((item: any) => ({
+            id: item.id,
+            name: item.name,
+          })));
+          hasFetched.current = true;
         }
-      } catch (error) {
-        console.error("Error fetching tags:", error);
+      } catch (err) {
+        console.error('Failed to fetch tags:', err);
       }
     };
 
     fetchTags();
   }, [request]);
 
-  const addTag = async (tag: Omit<Tag, 'id' | 'user_id' | 'created_at' | 'updated_at'>) => {
+  const addTag = async (tag: Omit<Tag, 'id'>) => {
     try {
       const response = await request('api/core/kitchen-operations/tags', 'POST', {}, tag);
       setTags((prevTags) => [...prevTags, response]);
     } catch (err) {
-      // Handle the error if needed
+      console.error('Failed to add tag:', err);
     }
   };
 
+  // Memoize the value passed to the provider
+  const value = useMemo(() => ({
+    tags,
+    loading,
+    error,
+    addTag,
+  }), [tags, loading, error]);
+
   return (
-    <TagsContext.Provider value={{ tags, loading, error, addTag }}>
+    <TagsContext.Provider value={value}>
       {children}
     </TagsContext.Provider>
   );
