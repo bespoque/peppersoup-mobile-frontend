@@ -2,6 +2,7 @@
 
 import HomeFoodMenu from "@/src/components/HomeFoodMenuTabs";
 import Summary from "@/src/components/SummaryCard";
+// import { useUser } from "@/src/context/UserContext";
 
 const cardData = [
   {
@@ -33,6 +34,9 @@ const cardData = [
     // buttonText: "View Revenue",
   },
 ];
+
+// console.log("useUser", useUser);
+
 
 const HomePage = () => {
   return (
