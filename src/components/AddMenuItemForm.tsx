@@ -6,11 +6,9 @@ import { useSides } from "@/src/context/SidesContext";
 import { useMenu } from "@/src/context/MenuContext";
 import { FaTrash } from "react-icons/fa";
 import { useApi } from "@/src/hooks/useApi";
-import { toast } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useRouter } from "next/navigation";
-
-// toast.configure(); // Call it once in your app
 
 interface AddMenuItemFormProps {
   menuType: string;
@@ -303,6 +301,7 @@ const AddMenuItemForm: React.FC<AddMenuItemFormProps> = ({ menuType }) => {
 
   return (
     <div className="p-8 bg-white rounded-lg border m-2 shadow-lg">
+      <ToastContainer />
       <h2 className="text-2xl font-bold mb-6">
         Add New Menu Item - {menuType}
       </h2>
