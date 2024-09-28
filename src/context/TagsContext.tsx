@@ -5,6 +5,8 @@ import { useApi } from '../hooks/useApi';
 interface Tag {
   id: number;
   name: string;
+  created_at: string;
+  updated_at: string;
 }
 
 interface TagsContextType {
@@ -30,6 +32,8 @@ export const TagsProvider: React.FC<{ children: React.ReactNode }> = ({ children
           setTags(data.data.map((item: any) => ({
             id: item.id,
             name: item.name,
+            created_at: item.created_at,
+            updated_at: item.updated_at,
           })));
           hasFetched.current = true;
         }

@@ -6,6 +6,8 @@ interface PortionSize {
   id: number;
   name: string;
   amount: string;
+  created_at: string;
+  updated_at: string;
 }
 
 interface PortionSizesContextType {
@@ -32,6 +34,8 @@ export const PortionSizesProvider: React.FC<{ children: React.ReactNode }> = ({ 
             id: item.id,
             name: item.name,
             amount: item.amount,
+            created_at: item.created_at,
+            updated_at: item.updated_at,
           })));
           hasFetched.current = true;
         }

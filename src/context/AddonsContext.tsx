@@ -6,6 +6,8 @@ interface Addon {
   id: number;
   name: string;
   amount: string;
+  created_at: string;
+  updated_at: string;
 }
 
 interface AddonsContextType {
@@ -32,6 +34,8 @@ export const AddonsProvider: React.FC<{ children: React.ReactNode }> = ({ childr
             id: item.id,
             name: item.name,
             amount: item.amount,
+            created_at: item.created_at,
+            updated_at: item.updated_at,
           })));
           hasFetched.current = true;
         }

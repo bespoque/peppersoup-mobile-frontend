@@ -296,7 +296,6 @@ const AddMenuItemForm: React.FC<AddMenuItemFormProps> = ({ menuType }) => {
     }
 
     console.log("Payload to be submitted:", payload);
-    // Send payload to API here...
   };
 
   return (
@@ -336,6 +335,7 @@ const AddMenuItemForm: React.FC<AddMenuItemFormProps> = ({ menuType }) => {
               <textarea
                 value={description}
                 required
+                maxLength={100}
                 onChange={(e) => setDescription(e.target.value)}
                 className="w-full p-2 border rounded"
                 placeholder="Type here"
@@ -513,6 +513,7 @@ const AddMenuItemForm: React.FC<AddMenuItemFormProps> = ({ menuType }) => {
                   {tags.map((tag) => (
                     <div key={tag.id} className="flex items-center">
                       <input
+                        
                         type="checkbox"
                         id={tag.id.toString()}
                         checked={selectedTags.includes(tag.id.toString())}

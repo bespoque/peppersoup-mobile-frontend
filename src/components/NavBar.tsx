@@ -15,6 +15,7 @@ const menuItems = [
       { label: "Support", href: "/help" },
       { label: "Discount & Promotions", href: "/discount" },
       { label: "Customer Feedbacks", href: "/feedback" },
+      { label: "Menu Configuration", href: "/configuration" },
     ],
   },
 ];
@@ -161,7 +162,7 @@ const router = useRouter()
                   height={20}
                   className="invert"
                 />
-                <span>Settings</span>
+                <span>Profile</span>
               </button>
 
               <button onClick={logoutUser} className="flex items-center gap-2 text-gray-300 hover:text-white">

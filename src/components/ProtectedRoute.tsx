@@ -14,20 +14,15 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     if (!token) {
       router.push("/");
     } else {
-      setLoading(false); 
+      setLoading(false);
     }
   }, [router]);
 
   if (loading) {
-    return (
-      // <div className="flex justify-center items-center min-h-screen">
-      //   <div className="loader">Loading...</div>
-      // </div>
-      <Loader />
-    );
+    return <Loader />;
   }
 
-  return <>{children}</>; // Render the protected page once token is validated
+  return <>{children}</>;
 };
 
 export default ProtectedRoute;
