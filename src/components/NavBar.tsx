@@ -27,7 +27,7 @@ const Navbar = () => {
   const handleProfileClick = () => {
     setIsProfileOpen((prevState) => !prevState);
   };
-const router = useRouter()
+  const router = useRouter();
   const closeModal = () => {
     setIsProfileOpen(false);
   };
@@ -70,7 +70,7 @@ const router = useRouter()
                 <Link
                   href={item.href}
                   key={item.label}
-                  className={`py-2 md:px-2 ${
+                  className={`py-2 md:px-2 hover:bg-cyan-800 hover:rounded-lg hover:text-white ${
                     isActive ? "font-bold border-b-2 border-black" : ""
                   }`}
                 >
@@ -165,7 +165,10 @@ const router = useRouter()
                 <span>Profile</span>
               </button>
 
-              <button onClick={logoutUser} className="flex items-center gap-2 text-gray-300 hover:text-white">
+              <button
+                onClick={logoutUser}
+                className="flex items-center gap-2 text-gray-300 hover:text-white"
+              >
                 <Image
                   src="/images/icons/logout.png"
                   alt="Logout"

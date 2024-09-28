@@ -31,11 +31,11 @@ const AddonsTable: React.FC = () => {
           </tr>
         </thead>
         <tbody>
-          {sides.map((tag, index) => (
+          {sides.map((side, index) => (
             <tr key={index} className="text-left bg-white border-b">
-              <td className="px-6 py-4">{tag.name}</td>
-              <td className="px-6 py-4">{formatDate(tag.created_at)}</td>
-              <td className="px-6 py-4">{formatDate(tag.updated_at)}</td>
+              <td className="px-6 py-4">{side.name}</td>
+              <td className="px-6 py-4">{formatDate(side.created_at)}</td>
+              <td className="px-6 py-4">{formatDate(side.updated_at)}</td>
               <td className="px-6 py-4 text-blue-600 cursor-pointer">View</td>
             </tr>
           ))}

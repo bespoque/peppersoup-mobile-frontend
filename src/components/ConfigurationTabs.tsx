@@ -3,10 +3,16 @@ import TagsTable from "./TagsTable";
 import SideTable from "./SideTable";
 import PortionSizeTable from "./PortionSizeTable";
 import AddonsTable from "./AddonsTable";
+import CategoriesTable from "./CategoriesTable";
 
 const ConfigurationTabs = () => {
-  const tabLabels = ["Tags", "Sides", "portion size", "Add-ons"] as string[];
+  const tabLabels = ["Categories", "Tags", "Sides", "portion size", "Add-ons"] as string[];
   const tabContent = {
+    Categories: (
+      <div className="flex space-x-2 overflow-x-auto">
+        <CategoriesTable />
+      </div>
+    ),
     Tags: (
       <div className="flex space-x-2 overflow-x-auto">
         <TagsTable />
@@ -18,12 +24,12 @@ const ConfigurationTabs = () => {
       </div>
     ),
     "portion size": (
-      <div>
+      <div className="flex space-x-2 overflow-x-auto">
         <PortionSizeTable />
       </div>
     ),
     "Add-ons": (
-      <div>
+      <div className="flex space-x-2 overflow-x-auto">
         <AddonsTable />
       </div>
     ),

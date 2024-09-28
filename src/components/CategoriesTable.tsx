@@ -1,10 +1,10 @@
 
 import React from 'react';
-import { usePortionSizes } from "@/src/context/PortionSizesContext";
+import { useCategories } from '@/src/context/CategoriesContext';
 ;
 
-const PortionSizeTable: React.FC = () => {
-  const { portionSizes } = usePortionSizes();
+const CategoriesTable: React.FC = () => {
+  const { categories } = useCategories();
  
   const formatDate = (dateString: string): string => {
     const date = new Date(dateString);
@@ -24,18 +24,18 @@ const PortionSizeTable: React.FC = () => {
       <table className="min-w-full mt-6 bg-white">
         <thead>
           <tr className="text-left bg-gray-100">
-            <th className="px-6 py-3">Addon</th>
+            <th className="px-6 py-3">Category</th>
             <th className="px-6 py-3">Created time</th>
             <th className="px-6 py-3">Updated time</th>
             <th className="px-6 py-3">Action</th>
           </tr>
         </thead>
         <tbody>
-          {portionSizes.map((size, index) => (
+          {categories.map((cat, index) => (
             <tr key={index} className="text-left bg-white border-b">
-              <td className="px-6 py-4">{size.name}</td>
-              <td className="px-6 py-4">{formatDate(size.created_at)}</td>
-              <td className="px-6 py-4">{formatDate(size.updated_at)}</td>
+              <td className="px-6 py-4">{cat.title}</td>
+              <td className="px-6 py-4">{formatDate(cat.created_at)}</td>
+              <td className="px-6 py-4">{formatDate(cat.updated_at)}</td>
               <td className="px-6 py-4 text-blue-600 cursor-pointer">View</td>
             </tr>
           ))}
@@ -45,4 +45,4 @@ const PortionSizeTable: React.FC = () => {
   );
 };
 
-export default PortionSizeTable;
+export default CategoriesTable;
