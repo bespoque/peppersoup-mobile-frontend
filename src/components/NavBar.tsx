@@ -47,8 +47,8 @@ const Navbar = () => {
     <>
       <div className="flex items-center justify-between p-4 border">
         <div className="flex gap-2">
-          <div className="p-3">
-            <Image src="/images/logo.png" alt="Logo" width={40} height={40} />
+          <div className="p-3 border-r-2">
+            <Image src="/images/logo.png" alt="Logo" width={50} height={50} />
           </div>
           <button
             className="block md:hidden w-10 h-10 bg-gray-200 rounded-lg flex items-center justify-center"
@@ -63,14 +63,14 @@ const Navbar = () => {
             />
           </button>
 
-          <div className="hidden md:flex gap-6">
+          <div className="hidden md:flex gap-6 items-center">
             {menuItems[0].items.map((item) => {
               const isActive = pathname === item.href;
               return (
                 <Link
                   href={item.href}
                   key={item.label}
-                  className={`py-2 md:px-2 hover:bg-cyan-800 hover:rounded-lg hover:text-white ${
+                  className={`py-2 md:px-2 hover:bg-cyan-900 hover:rounded-lg hover:text-white ${
                     isActive ? "font-bold border-b-2 border-black" : ""
                   }`}
                 >
@@ -84,7 +84,7 @@ const Navbar = () => {
         </div>
 
         <div className="flex items-center gap-4">
-          <div className="w-10 h-10 bg-gray-300 rounded-lg flex items-center justify-center mb-4">
+          <div className="w-10 h-10 bg-gray-300 rounded-lg flex items-center justify-center cursor-pointer">
             <Image
               src="/images/icons/bell.png"
               alt="notifications"
@@ -95,7 +95,7 @@ const Navbar = () => {
           </div>
 
           <div
-            className="w-10 h-10 bg-black rounded-lg flex items-center justify-center mb-4 cursor-pointer"
+            className="w-10 h-10 bg-black rounded-lg flex items-center justify-center  cursor-pointer"
             onClick={handleProfileClick}
           >
             <Image

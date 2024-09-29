@@ -56,7 +56,7 @@ export const PortionSizesProvider: React.FC<{ children: React.ReactNode }> = ({ 
     }
   };
 
-  // Memoize the value passed to the provider
+
   const value = useMemo(() => ({
     portionSizes,
     loading,

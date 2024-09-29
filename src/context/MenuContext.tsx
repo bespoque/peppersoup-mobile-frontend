@@ -1,6 +1,13 @@
 "use client";
-import { createContext, useContext, useState, useEffect, ReactNode, useMemo } from 'react';
-import { useApi } from '@/src/hooks/useApi';
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+  useMemo,
+} from "react";
+import { useApi } from "@/src/hooks/useApi";
 
 interface MenuItem {
   id: number;
@@ -31,7 +38,7 @@ interface MenuContextProps {
   menuData: MenuData;
   loading: boolean;
   error: string | null;
-  refreshMenuItems: () => Promise<void>; // Add refresh function type
+  refreshMenuItems: () => Promise<void>;
 }
 
 const MenuContext = createContext<MenuContextProps | undefined>(undefined);
@@ -39,7 +46,7 @@ const MenuContext = createContext<MenuContextProps | undefined>(undefined);
 export const useMenu = () => {
   const context = useContext(MenuContext);
   if (!context) {
-    throw new Error('useMenu must be used within a MenuProvider');
+    throw new Error("useMenu must be used within a MenuProvider");
   }
   return context;
 };
@@ -54,7 +61,7 @@ export const MenuProvider = ({ children }: { children: ReactNode }) => {
   const [error, setError] = useState<string | null>(null);
   const { request } = useApi();
 
-  const categorizeMenuItems = (data: ApiResponse['data']) => {
+  const categorizeMenuItems = (data: ApiResponse["data"]) => {
     const categorizedData: MenuData = {
       PepperSoup: [],
       SideDishes: [],
@@ -62,11 +69,11 @@ export const MenuProvider = ({ children }: { children: ReactNode }) => {
     };
 
     data.forEach((category) => {
-      if (category.title === 'PepperSoup') {
+      if (category.title === "PepperSoup") {
         categorizedData.PepperSoup = category.items.data;
-      } else if (category.title === 'Side Dishes') {
+      } else if (category.title === "Side Dishes") {
         categorizedData.SideDishes = category.items.data;
-      } else if (category.title === 'Drinks') {
+      } else if (category.title === "Drinks") {
         categorizedData.Drinks = category.items.data;
       }
     });
@@ -77,38 +84,39 @@ export const MenuProvider = ({ children }: { children: ReactNode }) => {
   const fetchMenuItems = async () => {
     setLoading(true);
     try {
-      const response = await request('/api/core/kitchen-operations/menu-items/all', 'GET') as ApiResponse; // Type assertion here
-      if (response?.resp_code === '00') {
+      const response = (await request(
+        "/api/core/kitchen-operations/menu-items/all",
+        "GET"
+      )) as ApiResponse;
+      if (response?.resp_code === "00") {
         categorizeMenuItems(response.data);
       } else {
-        setError('Failed to fetch menu items');
+        setError("Failed to fetch menu items");
       }
     } catch (err) {
-      setError((err as Error).message || 'Error fetching menu items'); // Ensure `err` is typed correctly
+      setError((err as Error).message || "Error fetching menu items");
     } finally {
       setLoading(false);
     }
   };
 
-  // New function to refresh menu items
   const refreshMenuItems = async () => {
-    await fetchMenuItems(); // Reuse the existing fetch function
+    await fetchMenuItems();
   };
 
   useEffect(() => {
     fetchMenuItems();
   }, []);
 
-  const value = useMemo(() => ({
-    menuData,
-    loading,
-    error,
-    refreshMenuItems, // Include the refresh function in the context value
-  }), [menuData, loading, error]);
-
-  return (
-    <MenuContext.Provider value={value}>
-      {children}
-    </MenuContext.Provider>
+  const value = useMemo(
+    () => ({
+      menuData,
+      loading,
+      error,
+      refreshMenuItems,
+    }),
+    [menuData, loading, error]
   );
+
+  return <MenuContext.Provider value={value}>{children}</MenuContext.Provider>;
 };
