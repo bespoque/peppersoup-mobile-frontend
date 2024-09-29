@@ -1,5 +1,10 @@
 import React, { useState } from "react";
 import { useApi } from "@/src/hooks/useApi";
+import { useAddOns } from "@/src/context/AddonsContext";
+import { useCategories } from "@/src/context/CategoriesContext";
+import { useTags } from "@/src/context/TagsContext";
+import { useSides } from "@/src/context/SidesContext";
+import { usePortionSizes } from "@/src/context/PortionSizesContext";
 
 const formatNumberWithCommas = (value: string) => {
   const cleanedValue = value.replace(/[^\d]/g, "");
@@ -21,7 +26,11 @@ const ConfigModal: React.FC<ConfigModalProps> = ({
 }) => {
   const [error, setError] = useState<string | null>(null);
   const { request, loading } = useApi();
-
+  const { refreshAddon } = useAddOns();
+  const { refreshCategories } = useCategories();
+  const { refreshSides } = useSides();
+  const { refreshTags } = useTags();
+  const { refreshPortionSize } = usePortionSizes();
   const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
     const formattedValue = formatNumberWithCommas(value);
@@ -82,6 +91,25 @@ const ConfigModal: React.FC<ConfigModalProps> = ({
     try {
       await request(endpoint, "POST", {}, payload);
       setError(null); 
+      switch (selectedMenu) {
+        case "category":
+            refreshCategories();
+            break;
+        case "portion":
+            refreshPortionSize();
+            break;
+        case "side":
+            refreshSides();
+            break;
+        case "tag":
+            refreshTags();
+            break;
+        case "addon":
+          refreshAddon();
+          break;
+        default:
+          break;
+      }
       handleCloseModal(); 
     } catch (err) {
       setError("Failed to create item. Please try again.");
@@ -105,7 +133,7 @@ const ConfigModal: React.FC<ConfigModalProps> = ({
                 value={formData.title}
                 onChange={handleInputChange}
                 className="w-full p-2 border rounded"
-                placeholder="Enter category title"
+                placeholder="eg. Pastry"
                 required
               />
             </div>
@@ -116,7 +144,7 @@ const ConfigModal: React.FC<ConfigModalProps> = ({
                 value={formData.desc}
                 onChange={handleInputChange}
                 className="w-full p-2 border rounded"
-                placeholder="Enter category description"
+                placeholder="eg. Pastry Menu"
                 required
               />
             </div>
@@ -150,12 +178,13 @@ const ConfigModal: React.FC<ConfigModalProps> = ({
           </>
         )}
 
-        {error && <div className="text-red-500 mb-4">{error}</div>}
+        {error && <small className="text-red-500 mb-4">{error}</small>}
 
         <div className="flex justify-end">
           <button
             className="bg-gray-300 text-black px-4 py-2 rounded mr-2"
             onClick={handleCloseModal}
+            disabled={loading} 
           >
             Cancel
           </button>

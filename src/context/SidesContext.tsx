@@ -21,74 +21,62 @@ interface SidesContextType {
   sides: Side[];
   loading: boolean;
   error: string | null;
-  addSide: (side: Omit<Side, "id">) => Promise<void>;
+  refreshSides: () => void;
 }
 
 const SidesContext = createContext<SidesContextType | undefined>(undefined);
 
-export const SidesProvider: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => {
+export const SidesProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { request, loading, error } = useApi();
   const [sides, setSides] = useState<Side[]>([]);
   const hasFetched = useRef(false);
 
-  useEffect(() => {
-    const fetchSides = async () => {
-      if (hasFetched.current) return;
-      try {
-        const data = await request(
-          "/api/core/kitchen-operations/item-sides/all",
-          "GET"
-        );
-        if (data.resp_code === "00") {
-          setSides(
-            data.data.map((item: any) => ({
-              id: item.id,
-              name: item.name,
-              amount: item.amount,
-              created_at: item.created_at,
-              updated_at: item.updated_at,
-            }))
-          );
-          hasFetched.current = true;
-        }
-      } catch (err) {
-        console.error("Failed to fetch sides:", err);
-      }
-    };
-
-    fetchSides();
-  }, [request]);
-
-  const addSide = async (side: Omit<Side, "id">) => {
+  const fetchSides = async () => {
     try {
-      const response = await request(
-        "api/core/kitchen-operations/item-sides",
-        "POST",
-        {},
-        side
-      );
-      setSides((prevSides) => [...prevSides, response]);
+      const data = await request("/api/core/kitchen-operations/item-sides/all", "GET");
+      if (data.resp_code === "00") {
+        setSides(
+          data.data.map((item: any) => ({
+            id: item.id,
+            name: item.name,
+            amount: item.amount,
+            created_at: item.created_at,
+            updated_at: item.updated_at,
+          }))
+        );
+        hasFetched.current = true;
+      }
     } catch (err) {
-      console.error("Failed to add side:", err);
+      console.error("Failed to fetch sides:", err);
     }
   };
+
+  useEffect(() => {
+    if (!hasFetched.current) {
+      fetchSides();
+    }
+  }, []);
+
+  const refreshSides = () => {
+    hasFetched.current = false;
+    fetchSides();
+  };
+
+
 
   const value = useMemo(
     () => ({
       sides,
       loading,
       error,
-      addSide,
+      refreshSides
     }),
     [sides, loading, error]
   );
 
-  return (
-    <SidesContext.Provider value={value}>{children}</SidesContext.Provider>
-  );
+  return <SidesContext.Provider value={value}>{children}</SidesContext.Provider>;
 };
+
 
 export const useSides = () => {
   const context = useContext(SidesContext);

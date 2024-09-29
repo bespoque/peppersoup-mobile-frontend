@@ -21,7 +21,7 @@ interface AddonsContextType {
   addOns: Addon[];
   loading: boolean;
   error: string | null;
-  addAddon: (addon: Omit<Addon, "id">) => Promise<void>;
+  refreshAddon: () => void;
 }
 
 const AddonsContext = createContext<AddonsContextType | undefined>(undefined);
@@ -33,46 +33,40 @@ export const AddonsProvider: React.FC<{ children: React.ReactNode }> = ({
   const [addOns, setAddons] = useState<Addon[]>([]);
   const hasFetched = useRef(false);
 
-  useEffect(() => {
-    const fetchAddons = async () => {
-      if (hasFetched.current) return;
-      try {
-        const data = await request(
-          "/api/core/kitchen-operations/adds-on/all",
-          "GET"
-        );
-        if (data.resp_code === "00") {
-          setAddons(
-            data.data.map((item: any) => ({
-              id: item.id,
-              name: item.name,
-              amount: item.amount,
-              created_at: item.created_at,
-              updated_at: item.updated_at,
-            }))
-          );
-          hasFetched.current = true;
-        }
-      } catch (err) {
-        console.error("Failed to fetch add-ons:", err);
-      }
-    };
-
-    fetchAddons();
-  }, [request]);
-
-  const addAddon = async (addon: Omit<Addon, "id">) => {
+  // Fetch add-ons
+  const fetchAddons = async () => {
     try {
-      const response = await request(
-        "api/core/kitchen-operations/adds-on",
-        "POST",
-        {},
-        addon
+      const data = await request(
+        "/api/core/kitchen-operations/adds-on/all",
+        "GET"
       );
-      setAddons((prevAddons) => [...prevAddons, response]);
+      if (data.resp_code === "00") {
+        setAddons(
+          data.data.map((item: any) => ({
+            id: item.id,
+            name: item.name,
+            amount: item.amount,
+            created_at: item.created_at,
+            updated_at: item.updated_at,
+          }))
+        );
+        hasFetched.current = true;
+      }
     } catch (err) {
-      console.error("Failed to add add-on:", err);
+      console.error("Failed to fetch add-ons:", err);
     }
+  };
+
+  useEffect(() => {
+    if (!hasFetched.current) {
+      fetchAddons();
+    }
+  }, []);
+
+
+  const refreshAddon = () => {
+    hasFetched.current = false;
+    fetchAddons();
   };
 
   const value = useMemo(
@@ -80,7 +74,7 @@ export const AddonsProvider: React.FC<{ children: React.ReactNode }> = ({
       addOns,
       loading,
       error,
-      addAddon,
+      refreshAddon
     }),
     [addOns, loading, error]
   );

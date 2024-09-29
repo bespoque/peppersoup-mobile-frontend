@@ -14,7 +14,7 @@ interface PortionSizesContextType {
   portionSizes: PortionSize[];
   loading: boolean;
   error: string | null;
-  addPortionSize: (portionSize: Omit<PortionSize, 'id'>) => Promise<void>;
+  refreshPortionSize: () => void;
 }
 
 const PortionSizesContext = createContext<PortionSizesContextType | undefined>(undefined);
@@ -24,44 +24,40 @@ export const PortionSizesProvider: React.FC<{ children: React.ReactNode }> = ({ 
   const [portionSizes, setPortionSizes] = useState<PortionSize[]>([]);
   const hasFetched = useRef(false);
 
-  useEffect(() => {
-    const fetchPortionSizes = async () => {
-      if (hasFetched.current) return;
-      try {
-        const data = await request('/api/core/kitchen-operations/portion-size/all', 'GET');
-        if (data.resp_code === '00') {
-          setPortionSizes(data.data.map((item: any) => ({
-            id: item.id,
-            name: item.name,
-            amount: item.amount,
-            created_at: item.created_at,
-            updated_at: item.updated_at,
-          })));
-          hasFetched.current = true;
-        }
-      } catch (err) {
-        console.error('Failed to fetch portion sizes:', err);
-      }
-    };
-
-    fetchPortionSizes();
-  }, [request]);
-
-  const addPortionSize = async (portionSize: Omit<PortionSize, 'id'>) => {
+  const fetchPortionSizes = async () => {
     try {
-      const response = await request('api/core/kitchen-operations/portion-size', 'POST', {}, portionSize);
-      setPortionSizes((prevPortionSizes) => [...prevPortionSizes, response]);
+      const data = await request('/api/core/kitchen-operations/portion-size/all', 'GET');
+      if (data.resp_code === '00') {
+        setPortionSizes(data.data.map((item: any) => ({
+          id: item.id,
+          name: item.name,
+          amount: item.amount,
+          created_at: item.created_at,
+          updated_at: item.updated_at,
+        })));
+        hasFetched.current = true;
+      }
     } catch (err) {
-      console.error('Failed to add portion size:', err);
+      console.error('Failed to fetch portion sizes:', err);
     }
   };
 
+  useEffect(() => {
+    if (!hasFetched.current) {
+      fetchPortionSizes();
+    }
+  }, []);
+
+  const refreshPortionSize = () => {
+    hasFetched.current = false;
+    fetchPortionSizes();
+  };
 
   const value = useMemo(() => ({
     portionSizes,
     loading,
     error,
-    addPortionSize,
+    refreshPortionSize
   }), [portionSizes, loading, error]);
 
   return (
@@ -70,6 +66,7 @@ export const PortionSizesProvider: React.FC<{ children: React.ReactNode }> = ({ 
     </PortionSizesContext.Provider>
   );
 };
+
 
 export const usePortionSizes = () => {
   const context = useContext(PortionSizesContext);
