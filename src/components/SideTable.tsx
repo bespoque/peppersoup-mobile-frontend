@@ -42,6 +42,7 @@ const SideTable: React.FC = () => {
         <thead>
           <tr className="text-left bg-gray-100">
             <th className="px-6 py-3">Side</th>
+            <th className="px-6 py-3">Amount</th>
             <th className="px-6 py-3">Created time</th>
             <th className="px-6 py-3">Updated time</th>
             <th className="px-6 py-3">Action</th>

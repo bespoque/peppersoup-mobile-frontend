@@ -42,6 +42,7 @@ const CategoriesTable: React.FC = () => {
         <thead>
           <tr className="text-left bg-gray-100">
             <th className="px-6 py-3">Category</th>
+            <th className="px-6 py-3">Description</th>
             <th className="px-6 py-3">Created time</th>
             <th className="px-6 py-3">Updated time</th>
             <th className="px-6 py-3">Action</th>
@@ -51,6 +52,7 @@ const CategoriesTable: React.FC = () => {
           {currentItems.map((cat, index) => (
             <tr key={index} className="text-left bg-white border-b hover:bg-gray-200 transition-colors duration-500">
               <td className="px-6 py-4">{cat.title}</td>
+              <td className="px-6 py-4">{cat.desc}</td>
               <td className="px-6 py-4">{formatDate(cat.created_at)}</td>
               <td className="px-6 py-4">{formatDate(cat.updated_at)}</td>
               <td className="px-6 py-4 text-blue-600 cursor-pointer">View</td>
