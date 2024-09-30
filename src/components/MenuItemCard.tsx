@@ -51,7 +51,7 @@ const MenuItemCard = ({
                 <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">
                   Set as Out of Stock
                 </li>
-                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">
+                {/* <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">
                   Edit Tags
                 </li>
                 <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">
@@ -59,7 +59,7 @@ const MenuItemCard = ({
                 </li>
                 <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">
                   Analytics
-                </li>
+                </li> */}
                 <li className="px-4 py-2 text-red-600 hover:bg-gray-100 cursor-pointer">
                   Delete this Item
                 </li>
