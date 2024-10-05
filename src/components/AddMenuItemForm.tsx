@@ -9,6 +9,7 @@ import { useApi } from "@/src/hooks/useApi";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 interface AddMenuItemFormProps {
   menuType: string;
@@ -48,6 +49,8 @@ const AddMenuItemForm: React.FC<AddMenuItemFormProps> = ({ menuType }) => {
 
   // Image upload and preview handler
   const handleFileChange = (file: File | null) => {
+    console.log("file", file);
+
     setItemPhoto(file);
     if (file) {
       setImagePreview(URL.createObjectURL(file));
@@ -238,6 +241,8 @@ const AddMenuItemForm: React.FC<AddMenuItemFormProps> = ({ menuType }) => {
     };
     const formData = new FormData();
 
+    console.log("payload", payload);
+
     // Append each property to the FormData
     formData.append("title", payload.title);
     formData.append("desc", payload.desc);
@@ -276,15 +281,6 @@ const AddMenuItemForm: React.FC<AddMenuItemFormProps> = ({ menuType }) => {
         toast.success("Menu item added successfully!");
         await refreshMenuItems(); // Refresh menu items after successful addition
         router.push("/home");
-        // Reset the form or handle state reset as needed
-        // setTitle('');
-        // setDesc('');
-        // setAvailability(1); // Reset to default if necessary
-        // setCategoryId(1); // Reset to default if necessary
-        // setTagIds([]);
-        // setMenuItemImages([]);
-        // setPortionSizeIds([]);
-        // setAddsonIds([]);
       } else if (response && response.resp_code === "01") {
         toast.error(response.resp_message);
       } else {
@@ -513,7 +509,6 @@ const AddMenuItemForm: React.FC<AddMenuItemFormProps> = ({ menuType }) => {
                   {tags.map((tag) => (
                     <div key={tag.id} className="flex items-center">
                       <input
-                        
                         type="checkbox"
                         id={tag.id.toString()}
                         checked={selectedTags.includes(tag.id.toString())}
@@ -568,10 +563,19 @@ const AddMenuItemForm: React.FC<AddMenuItemFormProps> = ({ menuType }) => {
                   />
                 </div>
               </div>
+              <div></div>
+              <p>Amount*</p>
+              <input
+                className="w-full p-2 border rounded"
+                placeholder="Type here"
+                type="text"
+              />
             </div>
+            Total <span className="font-bold">22,33</span>
           </div>
         </div>
       </form>
+      <p></p>
     </div>
   );
 };

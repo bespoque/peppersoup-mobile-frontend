@@ -24,7 +24,7 @@ const MenuItemCard = ({
   isDropdownActive,
 }: MenuItemCardProps) => {
   return (
-    <div className="p-4 bg-white w-96 h-96 shadow rounded-lg flex items-start gap-4 relative">
+    <div className="p-4 bg-white w-96 shadow rounded-lg flex items-start gap-4 relative">
       <Image
         src={image}
         alt={name}
