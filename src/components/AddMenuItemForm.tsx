@@ -571,6 +571,7 @@ const AddMenuItemForm: React.FC<AddMenuItemFormProps> = ({ menuType }) => {
                 type="text"
               />
             </div>
+            
             Total <span className="font-bold">22,33</span>
           </div>
         </div>
