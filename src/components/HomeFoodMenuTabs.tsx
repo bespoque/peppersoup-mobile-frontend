@@ -12,6 +12,9 @@ const HomeFoodMenu = () => {
     setActiveDropdown((prev) => (prev === index ? null : index));
   };
 
+  console.log("menuData.SideDishes", menuData.SideDishes);
+  
+
   const tabContent = {
     PepperSoup: (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
