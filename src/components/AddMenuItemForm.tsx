@@ -261,7 +261,7 @@ const AddMenuItemForm: React.FC<AddMenuItemFormProps> = ({ menuType }) => {
       availability: availabilityValue,
       category_id,
       tag_ids: selectedTags.map((tagId) => parseInt(tagId, 10)).filter((tagId) => !isNaN(tagId)),
-      menu_item_images: itemPhoto ? [itemPhoto] : [],  // Use array for multiple images
+      menu_item_images: itemPhoto ? [itemPhoto] : [], 
       portion_size_ids: sizeOptions.map((option) => parseInt(option.sizeId, 10)).filter((sizeId) => !isNaN(sizeId)),
       addson_ids: addOnOptions.map((option) => parseInt(option.addOnId, 10)).filter((addOnId) => !isNaN(addOnId)),
       sideOptions: sideOptions.map((option) => parseInt(option.sideId, 10)).filter((sideId) => !isNaN(sideId)),
@@ -292,7 +292,8 @@ const AddMenuItemForm: React.FC<AddMenuItemFormProps> = ({ menuType }) => {
         "/api/core/kitchen-operations/menu-items/create",
         "POST",
         {},
-        formData
+        // formData
+        payload
       );
   
       console.log("formData", Array.from(formData.entries()));  // Log FormData entries
@@ -300,6 +301,7 @@ const AddMenuItemForm: React.FC<AddMenuItemFormProps> = ({ menuType }) => {
       if (response && response.resp_code === "00") {
         toast.success("Menu item added successfully!");
         await refreshMenuItems();
+        router.push("/home")
       } else if (response && response.resp_code === "01") {
         toast.error(response.resp_message);
       } else {

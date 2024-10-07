@@ -28,7 +28,7 @@ const MenuItemCard = ({
       <Image
         src={image}
         alt={name}
-        width={"150"}
+        width={"155"}
         height={"150"}
         className="object-cover rounded-lg"
       />

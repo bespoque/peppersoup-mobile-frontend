@@ -55,8 +55,8 @@ const HomeFoodMenu = () => {
             name={item.name}
             price={`₦${item.menu_item_portion_size[0]?.portion.amount}`}
             description={item.desc}
-            image={"/images/menu/wine.png"}
-            // image={item.menu_item_images[0]?.image_link}
+            // image={"/images/menu/wine.png"}
+            image={item.menu_item_images[0]?.image_link}
             tags={item.menu_item_tags.map((tag) => tag.tag.name)}
             isDropdownActive={activeDropdown === index}
             onDropdownToggle={() => handleDropdownToggle(index)}
