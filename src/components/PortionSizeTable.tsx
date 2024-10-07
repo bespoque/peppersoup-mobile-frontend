@@ -1,10 +1,12 @@
 import React, { useState } from "react";
 import { usePortionSizes } from "@/src/context/PortionSizesContext";
-
+import { BiEdit } from "react-icons/bi";
+import UpdatePortionModal from "./UpdatePortionModal";
 
 const PortionSizeTable: React.FC = () => {
   const { portionSizes } = usePortionSizes();
-
+  const [currentPortion, setCurrentPortion] = useState<any | null>(null);
+  const [showModal, setShowModal] = useState(false);
   const ITEMS_PER_PAGE = 4;
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -41,6 +43,11 @@ const PortionSizeTable: React.FC = () => {
     });
   };
 
+  const handleView = (portion: any) => {
+    setCurrentPortion(portion);
+    setShowModal(true);
+  };
+
   return (
     <div className="w-full p-4">
       <table className="min-w-full mt-6 bg-white">
@@ -55,12 +62,23 @@ const PortionSizeTable: React.FC = () => {
         </thead>
         <tbody>
           {currentItems.map((size, index) => (
-            <tr key={index} className="text-left bg-white border-b hover:bg-gray-200 transition-colors duration-500">
+            <tr
+              key={index}
+              className="text-left bg-white border-b hover:bg-gray-200 transition-colors duration-500"
+            >
               <td className="px-6 py-4">{size.name}</td>
-              <td className="px-6 py-4">{formatNumberWithCommas(parseFloat(size.amount))}</td>
+              <td className="px-6 py-4">
+                {formatNumberWithCommas(parseFloat(size.amount))}
+              </td>
               <td className="px-6 py-4">{formatDate(size.created_at)}</td>
               <td className="px-6 py-4">{formatDate(size.updated_at)}</td>
-              <td className="px-6 py-4 text-blue-600 cursor-pointer">View</td>
+              <td
+                className="px-6 py-4 text-cyan-800 cursor-pointer"
+                onClick={() => handleView(size)}
+              >
+                {" "}
+                <BiEdit />
+              </td>
             </tr>
           ))}
         </tbody>
@@ -91,6 +109,16 @@ const PortionSizeTable: React.FC = () => {
           </button>
         </div>
       </div>
+
+
+      {showModal && currentPortion && (
+        <UpdatePortionModal
+          portionId={currentPortion.id}
+          initialName={currentPortion.name}
+          initialAmount={currentPortion.amount}
+          onClose={() => setShowModal(false)}
+        />
+      )}
     </div>
   );
 };

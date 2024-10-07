@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { useCategories } from "@/src/context/CategoriesContext";
 import UpdateCategoryModal from "./UpdateCategoryModal"; // Import the modal
-import { FiDelete } from "react-icons/fi";
 import { BiEdit } from "react-icons/bi";
 
 const CategoriesTable: React.FC = () => {

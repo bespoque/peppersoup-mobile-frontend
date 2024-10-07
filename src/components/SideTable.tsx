@@ -1,7 +1,11 @@
 import React, { useState } from "react";
 import { useSides } from "@/src/context/SidesContext";
+import { BiEdit } from "react-icons/bi";
+import UpdateSideModal from "./UpdateSideModal";
 const SideTable: React.FC = () => {
   const { sides } = useSides();
+  const [currentSIde, setCurrentSide] = useState<any | null>(null);
+  const [showModal, setShowModal] = useState(false);
 
   const ITEMS_PER_PAGE = 4;
   const [currentPage, setCurrentPage] = useState(1);
@@ -36,6 +40,11 @@ const SideTable: React.FC = () => {
     });
   };
 
+  const handleView = (side: any) => {
+    setCurrentSide(side);
+    setShowModal(true);
+  };
+
   return (
     <div className="w-full p-4">
       <table className="min-w-full mt-6 bg-white">
@@ -50,14 +59,22 @@ const SideTable: React.FC = () => {
         </thead>
         <tbody>
           {currentItems.map((side, index) => (
-            <tr key={index} className="text-left bg-white border-b hover:bg-gray-200 transition-colors duration-500">
+            <tr
+              key={index}
+              className="text-left bg-white border-b hover:bg-gray-200 transition-colors duration-500"
+            >
               <td className="px-6 py-4">{side.name}</td>
               <td className="px-6 py-4">
                 {formatNumberWithCommas(parseFloat(side.amount))}
               </td>
               <td className="px-6 py-4">{formatDate(side.created_at)}</td>
               <td className="px-6 py-4">{formatDate(side.updated_at)}</td>
-              <td className="px-6 py-4 text-blue-600 cursor-pointer">View</td>
+              <td
+                className="px-6 py-4 text-gray-800 cursor-pointer"
+                onClick={() => handleView(side)}
+              >
+                <BiEdit />
+              </td>
             </tr>
           ))}
         </tbody>
@@ -88,6 +105,15 @@ const SideTable: React.FC = () => {
           </button>
         </div>
       </div>
+
+      {showModal && currentSIde && (
+        <UpdateSideModal
+          sideId={currentSIde.id}
+          initialName={currentSIde.name}
+          initialAmount={currentSIde.amount}
+          onClose={() => setShowModal(false)}
+        />
+      )}
     </div>
   );
 };

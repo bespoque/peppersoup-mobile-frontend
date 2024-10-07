@@ -21,7 +21,8 @@ const HomeFoodMenu = () => {
             name={item.name}
             price={`₦${item.menu_item_portion_size[0]?.portion.amount}`}
             description={item.desc}
-            image={"/images/loginplate.png"} 
+            // image={"/images/loginplate.png"} 
+            image={item.menu_item_images[0]?.image_link}
             tags={item.menu_item_tags.map((tag) => tag.tag.name)}
             isDropdownActive={activeDropdown === index} 
             onDropdownToggle={() => handleDropdownToggle(index)} 
@@ -37,7 +38,8 @@ const HomeFoodMenu = () => {
             name={item.name}
             price={`₦${item.menu_item_portion_size[0]?.portion.amount}`}
             description={item.desc}
-            image={"/images/menu/rice.png"} 
+            image={item.menu_item_images[0]?.image_link}
+            // image={"/images/menu/rice.png"} 
             tags={item.menu_item_tags.map((tag) => tag.tag.name)}
             isDropdownActive={activeDropdown === index}
             onDropdownToggle={() => handleDropdownToggle(index)} 

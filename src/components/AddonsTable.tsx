@@ -1,9 +1,12 @@
 import React, { useState } from "react";
 import { useAddOns } from "@/src/context/AddonsContext";
+import { BiEdit } from "react-icons/bi";
+import UpdateAddonModal from "./UpdateAddonModal";
 
 const AddonsTable: React.FC = () => {
   const { addOns } = useAddOns();
-
+  const [currentAddon, setcurrentAddon] = useState<any | null>(null);
+  const [showModal, setShowModal] = useState(false);
   const ITEMS_PER_PAGE = 4;
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -37,6 +40,11 @@ const AddonsTable: React.FC = () => {
     });
   };
 
+  const handleView = (addon: any) => {
+    setcurrentAddon(addon);
+    setShowModal(true);
+  };
+
   return (
     <div className="w-full p-4">
       <table className="min-w-full mt-6 bg-white">
@@ -56,7 +64,9 @@ const AddonsTable: React.FC = () => {
               <td className="px-6 py-4">{formatNumberWithCommas(parseFloat(add.amount))}</td>
               <td className="px-6 py-4">{formatDate(add.created_at)}</td>
               <td className="px-6 py-4">{formatDate(add.updated_at)}</td>
-              <td className="px-6 py-4 text-blue-600 cursor-pointer">View</td>
+              <td className="px-6 py-4 text-gray-800 cursor-pointer"
+              onClick={() => handleView(add)}
+              > <BiEdit /></td>
             </tr>
           ))}
         </tbody>
@@ -86,6 +96,15 @@ const AddonsTable: React.FC = () => {
           </button>
         </div>
       </div>
+
+      {showModal && currentAddon && (
+        <UpdateAddonModal
+          addonId={currentAddon.id}
+          initialName={currentAddon.name}
+          initialAmount={currentAddon.amount}
+          onClose={() => setShowModal(false)}
+        />
+      )}
     </div>
   );
 };

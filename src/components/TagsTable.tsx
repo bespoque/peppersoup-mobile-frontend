@@ -1,10 +1,14 @@
 import React, { useState } from "react";
 import { useTags } from "@/src/context/TagsContext";
+import { BiEdit } from "react-icons/bi";
+import UpdateTagModal from "./UpdateTagModal";
 const TagsTable: React.FC = () => {
   const { tags } = useTags();
 
   const ITEMS_PER_PAGE = 4;
   const [currentPage, setCurrentPage] = useState(1);
+  const [currentTag, setCurrentTag] = useState<any | null>(null);
+  const [showModal, setShowModal] = useState(false);
 
   const totalPages = Math.ceil(tags.length / ITEMS_PER_PAGE);
 
@@ -33,6 +37,11 @@ const TagsTable: React.FC = () => {
     });
   };
 
+  const handleView = (tag: any) => {
+    setCurrentTag(tag);
+    setShowModal(true);
+  };
+
   return (
     <div className="w-full p-4">
       <table className="min-w-full mt-6 bg-white">
@@ -46,11 +55,19 @@ const TagsTable: React.FC = () => {
         </thead>
         <tbody>
           {currentItems.map((tag, index) => (
-            <tr key={index} className="text-left bg-white border-b hover:bg-gray-200 transition-colors duration-500">
+            <tr
+              key={index}
+              className="text-left bg-white border-b hover:bg-gray-200 transition-colors duration-500"
+            >
               <td className="px-6 py-4">{tag.name}</td>
               <td className="px-6 py-4">{formatDate(tag.created_at)}</td>
               <td className="px-6 py-4">{formatDate(tag.updated_at)}</td>
-              <td className="px-6 py-4 text-blue-600 cursor-pointer">View</td>
+              <td
+                className="px-6 py-4 text-gray-800 cursor-pointer"
+                onClick={() => handleView(tag)}
+              >
+                <BiEdit />
+              </td>
             </tr>
           ))}
         </tbody>
@@ -80,6 +97,14 @@ const TagsTable: React.FC = () => {
           </button>
         </div>
       </div>
+
+      {showModal && currentTag && (
+        <UpdateTagModal
+          tagId={currentTag.id}
+          initialName={currentTag.name}
+          onClose={() => setShowModal(false)}
+        />
+      )}
     </div>
   );
 };

@@ -33,11 +33,48 @@ const AddMenuItemForm: React.FC<AddMenuItemFormProps> = ({ menuType }) => {
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [itemPhoto, setItemPhoto] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [additionalAmount, setAdditionalAmount] = useState<number>(0);
+  const [total, setTotal] = useState<number>(0);
   const router = useRouter();
   const { portionSizes } = usePortionSizes();
   const { tags } = useTags();
   const { addOns } = useAddOns();
   const { sides } = useSides();
+
+  useEffect(() => {
+    // Calculate the total whenever options change
+    const totalAmount =
+      sizeOptions.reduce(
+        (sum, option) => sum + parseFloat(option.price || "0"),
+        0
+      ) +
+      addOnOptions.reduce(
+        (sum, option) => sum + parseFloat(option.addOnPrice || "0"),
+        0
+      ) +
+      sideOptions.reduce(
+        (sum, option) => sum + parseFloat(option.sidePrice || "0"),
+        0
+      );
+
+    // Add any additional user-entered amount to the total
+    setTotal(totalAmount + additionalAmount);
+  }, [sizeOptions, addOnOptions, sideOptions, additionalAmount]);
+
+  const handleAdditionalAmountChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const value = e.target.value;
+
+    // Only allow numbers and a single decimal point
+    if (/^\d*\.?\d*$/.test(value)) {
+      setAdditionalAmount(parseFloat(value) || 0);
+    }
+  };
+
+  const formatNumberWithCommas = (value: number): string => {
+    return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  };
 
   // Add new portion size option
   const handleAddSizeOption = (
@@ -205,8 +242,7 @@ const AddMenuItemForm: React.FC<AddMenuItemFormProps> = ({ menuType }) => {
     e: React.MouseEvent<HTMLFormElement, MouseEvent>
   ) => {
     e.preventDefault();
-
-    // Determine category_id based on menuType
+  
     let category_id = 0;
     if (menuType === "Peppersoup") {
       category_id = 1;
@@ -215,60 +251,42 @@ const AddMenuItemForm: React.FC<AddMenuItemFormProps> = ({ menuType }) => {
     } else if (menuType === "Drinks") {
       category_id = 3;
     }
-
-    // Set availability as 1 if "In Stock", otherwise 0
+  
     const availabilityValue = availability === "In Stock" ? 1 : 0;
-
-    // Prepare payload
+  
     const payload = {
       title: itemName,
       desc: description,
-      availability: availabilityValue, // 1 or 0 based on stock status
-      category_id, // 1, 2, or 3 based on menuType
-      tag_ids: selectedTags
-        .map((tagId) => parseInt(tagId, 10))
-        .filter((tagId) => !isNaN(tagId)), // Ensure valid tag IDs
-      menu_item_images: itemPhoto ? [itemPhoto] : [], // Ensure file is in an array
-      portion_size_ids: sizeOptions
-        .map((option) => parseInt(option.sizeId, 10))
-        .filter((sizeId) => !isNaN(sizeId)), // Ensure valid size IDs
-      addson_ids: addOnOptions
-        .map((option) => parseInt(option.addOnId, 10))
-        .filter((addOnId) => !isNaN(addOnId)), // Ensure valid add-on IDs
-      // sideOptions: sideOptions
-      //   .map((option) => parseInt(option.sideId, 10))
-      //   .filter((sideId) => !isNaN(sideId)), // Ensure valid side IDs
+      amount: total,
+      availability: availabilityValue,
+      category_id,
+      tag_ids: selectedTags.map((tagId) => parseInt(tagId, 10)).filter((tagId) => !isNaN(tagId)),
+      menu_item_images: itemPhoto ? [itemPhoto] : [],  // Use array for multiple images
+      portion_size_ids: sizeOptions.map((option) => parseInt(option.sizeId, 10)).filter((sizeId) => !isNaN(sizeId)),
+      addson_ids: addOnOptions.map((option) => parseInt(option.addOnId, 10)).filter((addOnId) => !isNaN(addOnId)),
+      sideOptions: sideOptions.map((option) => parseInt(option.sideId, 10)).filter((sideId) => !isNaN(sideId)),
     };
+  
     const formData = new FormData();
-
-    console.log("payload", payload);
-
-    // Append each property to the FormData
+  
     formData.append("title", payload.title);
     formData.append("desc", payload.desc);
-    formData.append("availability", availabilityValue.toString()); // FormData values are strings
+    formData.append("availability", availabilityValue.toString());
     formData.append("category_id", payload.category_id.toString());
-
-    // Append tag_ids as a comma-separated string or as individual entries
-    payload.tag_ids.forEach((tagId) =>
-      formData.append("tag_ids[]", tagId.toString())
-    );
-
-    // Append menu_item_images if they are files
+    formData.append("amount", total.toString());
+  
+    payload.tag_ids.forEach((tagId) => formData.append("tag_ids[]", tagId.toString()));
+  
+    // Ensure the image file is appended correctly
     payload.menu_item_images.forEach((image) => {
+      console.log("Appending image:", image);  // Log the image file
       formData.append("menu_item_images[]", image);
     });
-
-    // Append portion_size_ids
-    payload.portion_size_ids.forEach((portionSizeId) =>
-      formData.append("portion_size_ids[]", portionSizeId.toString())
-    );
-
-    // Append addson_ids
-    payload.addson_ids.forEach((addonId) =>
-      formData.append("addson_ids[]", addonId.toString())
-    );
-
+  
+    payload.portion_size_ids.forEach((portionSizeId) => formData.append("portion_size_ids[]", portionSizeId.toString()));
+    payload.addson_ids.forEach((addonId) => formData.append("addson_ids[]", addonId.toString()));
+    payload.sideOptions.forEach((sideId) => formData.append("sideOptions[]", sideId.toString()));
+  
     try {
       const response = await request(
         "/api/core/kitchen-operations/menu-items/create",
@@ -276,11 +294,12 @@ const AddMenuItemForm: React.FC<AddMenuItemFormProps> = ({ menuType }) => {
         {},
         formData
       );
-
+  
+      console.log("formData", Array.from(formData.entries()));  // Log FormData entries
+  
       if (response && response.resp_code === "00") {
         toast.success("Menu item added successfully!");
-        await refreshMenuItems(); // Refresh menu items after successful addition
-        router.push("/home");
+        await refreshMenuItems();
       } else if (response && response.resp_code === "01") {
         toast.error(response.resp_message);
       } else {
@@ -290,9 +309,8 @@ const AddMenuItemForm: React.FC<AddMenuItemFormProps> = ({ menuType }) => {
       toast.error("An error occurred. Please try again.");
       console.error("Error adding menu item:", error);
     }
-
-    console.log("Payload to be submitted:", payload);
   };
+  
 
   return (
     <div className="p-8 bg-white rounded-lg border m-2 shadow-lg">
@@ -563,16 +581,28 @@ const AddMenuItemForm: React.FC<AddMenuItemFormProps> = ({ menuType }) => {
                   />
                 </div>
               </div>
-              <div></div>
-              <p>Amount*</p>
-              <input
-                className="w-full p-2 border rounded"
-                placeholder="Type here"
-                type="text"
-              />
+              <div>
+                <div className="mb-4">
+                  <label className="block text-sm font-semibold mb-2">
+                    Item Price*
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={additionalAmount}
+                    onChange={handleAdditionalAmountChange}
+                    className="w-1/3 p-1 border rounded"
+                    placeholder="₦ Custom amount"
+                  />
+                </div>
+              </div>
             </div>
-            
-            Total <span className="font-bold">22,33</span>
+            <div className="mb-4">
+              <label className="block text-sm font-semibold mb-2">
+                Total Price
+              </label>
+              <p className="font-bold">₦ {formatNumberWithCommas(parseFloat(total.toFixed(2)))}</p>
+            </div>
           </div>
         </div>
       </form>

@@ -14,7 +14,9 @@ const formatNumberWithCommas = (value: string) => {
 interface ConfigModalProps {
   selectedMenu: string | null;
   formData: { name: string; amount: string; title: string; desc: string };
-  handleInputChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
+  handleInputChange: (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => void;
   handleCloseModal: () => void;
 }
 
@@ -52,7 +54,13 @@ const ConfigModal: React.FC<ConfigModalProps> = ({
       setError("Both title and description are required for categories.");
       return;
     }
-    if (selectedMenu !== "category" && (!formData.name || !formData.amount)) {
+
+    if (selectedMenu === "tag" && !formData.name) {
+      setError("Name is required for tags.");
+      return;
+    }
+
+    if (selectedMenu !== "tag" && selectedMenu !== "category" && (!formData.name || !formData.amount)) {
       setError("Both name and amount are required for this item.");
       return;
     }
@@ -66,7 +74,6 @@ const ConfigModal: React.FC<ConfigModalProps> = ({
       case "tag":
         endpoint = "/api/core/kitchen-operations/tag/create";
         payload.name = formData.name;
-        payload.amount = formData.amount.replace(/,/g, "");
         break;
       case "side":
         endpoint = "/api/core/kitchen-operations/item-sides/create";
@@ -90,27 +97,27 @@ const ConfigModal: React.FC<ConfigModalProps> = ({
 
     try {
       await request(endpoint, "POST", {}, payload);
-      setError(null); 
+      setError(null);
       switch (selectedMenu) {
         case "category":
-            refreshCategories();
-            break;
+          refreshCategories();
+          break;
         case "portion":
-            refreshPortionSize();
-            break;
+          refreshPortionSize();
+          break;
         case "side":
-            refreshSides();
-            break;
+          refreshSides();
+          break;
         case "tag":
-            refreshTags();
-            break;
+          refreshTags();
+          break;
         case "addon":
           refreshAddon();
           break;
         default:
           break;
       }
-      handleCloseModal(); 
+      handleCloseModal();
     } catch (err) {
       setError("Failed to create item. Please try again.");
     }
@@ -126,7 +133,9 @@ const ConfigModal: React.FC<ConfigModalProps> = ({
         {selectedMenu === "category" ? (
           <>
             <div className="mb-4">
-              <label className="block text-sm font-medium">Title <span className="text-red-500">*</span></label>
+              <label className="block text-sm font-medium">
+                Title <span className="text-red-500">*</span>
+              </label>
               <input
                 type="text"
                 name="title"
@@ -138,7 +147,9 @@ const ConfigModal: React.FC<ConfigModalProps> = ({
               />
             </div>
             <div className="mb-4">
-              <label className="block text-sm font-medium">Description <span className="text-red-500">*</span></label>
+              <label className="block text-sm font-medium">
+                Description <span className="text-red-500">*</span>
+              </label>
               <textarea
                 name="desc"
                 value={formData.desc}
@@ -149,10 +160,29 @@ const ConfigModal: React.FC<ConfigModalProps> = ({
               />
             </div>
           </>
+        ) : selectedMenu === "tag" ? (
+          <>
+            <div className="mb-4">
+              <label className="block text-sm font-medium">
+                Name <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                name="name"
+                value={formData.name}
+                onChange={handleInputChange}
+                className="w-full p-2 border rounded"
+                placeholder="Enter tag name"
+                required
+              />
+            </div>
+          </>
         ) : (
           <>
             <div className="mb-4">
-              <label className="block text-sm font-medium">Name <span className="text-red-500">*</span></label>
+              <label className="block text-sm font-medium">
+                Name <span className="text-red-500">*</span>
+              </label>
               <input
                 type="text"
                 name="name"
@@ -164,7 +194,9 @@ const ConfigModal: React.FC<ConfigModalProps> = ({
               />
             </div>
             <div className="mb-4">
-              <label className="block text-sm font-medium">Amount <span className="text-red-500">*</span></label>
+              <label className="block text-sm font-medium">
+                Amount <span className="text-red-500">*</span>
+              </label>
               <input
                 type="text"
                 name="amount"
@@ -184,14 +216,14 @@ const ConfigModal: React.FC<ConfigModalProps> = ({
           <button
             className="bg-gray-300 text-black px-4 py-2 rounded mr-2"
             onClick={handleCloseModal}
-            disabled={loading} 
+            disabled={loading}
           >
             Cancel
           </button>
           <button
             className="bg-paleGreen text-black px-4 py-2 rounded"
             onClick={handleSubmit}
-            disabled={loading} 
+            disabled={loading}
           >
             {loading ? "Saving..." : "Save"}
           </button>
