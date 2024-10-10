@@ -1,4 +1,3 @@
-
 import Image from "next/image";
 
 export interface MenuItem {
@@ -12,6 +11,7 @@ export interface MenuItem {
 interface MenuItemCardProps extends MenuItem {
   onDropdownToggle: () => void;
   isDropdownActive: boolean;
+  onEdit: () => void;
 }
 
 const MenuItemCard = ({
@@ -22,6 +22,7 @@ const MenuItemCard = ({
   tags,
   onDropdownToggle,
   isDropdownActive,
+  onEdit,
 }: MenuItemCardProps) => {
   return (
     <div className="p-4 bg-white w-96 shadow rounded-lg flex items-start gap-4 relative">
@@ -45,21 +46,15 @@ const MenuItemCard = ({
           {isDropdownActive && (
             <div className="absolute top-8 right-0 mt-2 w-52 bg-white border rounded shadow-lg z-10">
               <ul className="py-1">
-                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">
+                <li
+                  className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                  onClick={onEdit}
+                >
                   Edit this Item
                 </li>
                 <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">
                   Set as Out of Stock
                 </li>
-                {/* <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">
-                  Edit Tags
-                </li>
-                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">
-                  Remove from menu list
-                </li>
-                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">
-                  Analytics
-                </li> */}
                 <li className="px-4 py-2 text-red-600 hover:bg-gray-100 cursor-pointer">
                   Delete this Item
                 </li>

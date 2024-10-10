@@ -282,6 +282,10 @@ const AddMenuItemForm: React.FC<AddMenuItemFormProps> = ({ menuType }) => {
       console.log("Appending image:", image);  // Log the image file
       formData.append("menu_item_images[]", image);
     });
+
+    // if (itemPhoto) {
+    //   formData.append("menu_item_images[]", itemPhoto);
+    // }
   
     payload.portion_size_ids.forEach((portionSizeId) => formData.append("portion_size_ids[]", portionSizeId.toString()));
     payload.addson_ids.forEach((addonId) => formData.append("addson_ids[]", addonId.toString()));
@@ -301,7 +305,7 @@ const AddMenuItemForm: React.FC<AddMenuItemFormProps> = ({ menuType }) => {
       if (response && response.resp_code === "00") {
         toast.success("Menu item added successfully!");
         await refreshMenuItems();
-        router.push("/home")
+        // router.push("/home")
       } else if (response && response.resp_code === "01") {
         toast.error(response.resp_message);
       } else {
@@ -333,7 +337,7 @@ const AddMenuItemForm: React.FC<AddMenuItemFormProps> = ({ menuType }) => {
           <div className="md:col-span-2">
             <div className="mb-4">
               <label className="block text-sm font-semibold mb-1">
-                Item Name*
+                Item Name
               </label>
               <input
                 type="text"
@@ -362,7 +366,7 @@ const AddMenuItemForm: React.FC<AddMenuItemFormProps> = ({ menuType }) => {
             {/* Portion Sizes */}
             <div className="mb-4">
               <label className="block text-sm font-semibold mb-2">
-                Portion Size*
+                Portion Size
               </label>
               <div className="flex flex-col space-y-2 border shadow-sm p-2">
                 {sizeOptions.map((option, index) => (
@@ -412,7 +416,7 @@ const AddMenuItemForm: React.FC<AddMenuItemFormProps> = ({ menuType }) => {
             {/* Add-Ons */}
             <div className="mb-4">
               <label className="block text-sm font-semibold mb-2">
-                Add-Ons*
+                Add-Ons
               </label>
               <div className="flex flex-col space-y-2 border shadow-sm p-2">
                 {addOnOptions.map((option, index) => (
@@ -460,8 +464,8 @@ const AddMenuItemForm: React.FC<AddMenuItemFormProps> = ({ menuType }) => {
             </div>
 
             {/* Sides */}
-            <div className="mb-4">
-              <label className="block text-sm font-semibold mb-2">Sides*</label>
+            {/* <div className="mb-4">
+              <label className="block text-sm font-semibold mb-2">Sides</label>
               <div className="flex flex-col space-y-2 border shadow-sm p-2">
                 {sideOptions.map((option, index) => (
                   <div key={index} className="flex space-x-2 items-center">
@@ -505,7 +509,7 @@ const AddMenuItemForm: React.FC<AddMenuItemFormProps> = ({ menuType }) => {
                   + Add new side option
                 </button>
               </div>
-            </div>
+            </div> */}
           </div>
 
           <div className="md:col-span-3">
