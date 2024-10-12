@@ -23,6 +23,9 @@ const HomeFoodMenu = () => {
     setSelectedMenuItem(null); // Close the update form
   };
 
+console.log("selectedMenuItem", selectedMenuItem);
+
+
   const tabContent = {
     PepperSoup: (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
@@ -89,7 +92,6 @@ const HomeFoodMenu = () => {
             <UpdateMenuItemForm
               menuItem={selectedMenuItem}
               onUpdate={(updatedItem) => {
-                // Handle the updated item
                 console.log('Updated item:', updatedItem);
                 setSelectedMenuItem(null); // Close the form after update
               }}

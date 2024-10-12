@@ -2,14 +2,12 @@ import React, { useState, useEffect } from "react";
 import { usePortionSizes } from "@/src/context/PortionSizesContext";
 import { useTags } from "@/src/context/TagsContext";
 import { useAddOns } from "@/src/context/AddonsContext";
-import { useSides } from "@/src/context/SidesContext";
 import { useMenu } from "@/src/context/MenuContext";
 import { FaTrash } from "react-icons/fa";
 import { useApi } from "@/src/hooks/useApi";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
 
 interface AddMenuItemFormProps {
   menuType: string;
@@ -26,57 +24,17 @@ const AddMenuItemForm: React.FC<AddMenuItemFormProps> = ({ menuType }) => {
   const [addOnOptions, setAddOnOptions] = useState([
     { addOnId: "", addOnName: "", addOnPrice: "" },
   ]);
-  const [sideOptions, setSideOptions] = useState([
-    { sideId: "", sideName: "", sidePrice: "" },
-  ]);
+
   const [availability, setAvailability] = useState("In Stock");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [itemPhoto, setItemPhoto] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const [additionalAmount, setAdditionalAmount] = useState<number>(0);
-  const [total, setTotal] = useState<number>(0);
   const router = useRouter();
   const { portionSizes } = usePortionSizes();
   const { tags } = useTags();
   const { addOns } = useAddOns();
-  const { sides } = useSides();
 
-  useEffect(() => {
-    // Calculate the total whenever options change
-    const totalAmount =
-      sizeOptions.reduce(
-        (sum, option) => sum + parseFloat(option.price || "0"),
-        0
-      ) +
-      addOnOptions.reduce(
-        (sum, option) => sum + parseFloat(option.addOnPrice || "0"),
-        0
-      ) +
-      sideOptions.reduce(
-        (sum, option) => sum + parseFloat(option.sidePrice || "0"),
-        0
-      );
 
-    // Add any additional user-entered amount to the total
-    setTotal(totalAmount + additionalAmount);
-  }, [sizeOptions, addOnOptions, sideOptions, additionalAmount]);
-
-  const handleAdditionalAmountChange = (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const value = e.target.value;
-
-    // Only allow numbers and a single decimal point
-    if (/^\d*\.?\d*$/.test(value)) {
-      setAdditionalAmount(parseFloat(value) || 0);
-    }
-  };
-
-  const formatNumberWithCommas = (value: number): string => {
-    return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-  };
-
-  // Add new portion size option
   const handleAddSizeOption = (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
@@ -84,10 +42,7 @@ const AddMenuItemForm: React.FC<AddMenuItemFormProps> = ({ menuType }) => {
     setSizeOptions([...sizeOptions, { sizeId: "", size: "", price: "" }]);
   };
 
-  // Image upload and preview handler
   const handleFileChange = (file: File | null) => {
-    console.log("file", file);
-
     setItemPhoto(file);
     if (file) {
       setImagePreview(URL.createObjectURL(file));
@@ -96,7 +51,6 @@ const AddMenuItemForm: React.FC<AddMenuItemFormProps> = ({ menuType }) => {
     }
   };
 
-  // Handle drag-and-drop events
   const handleDrop = (event: React.DragEvent<HTMLDivElement>) => {
     event.preventDefault();
     const file = event.dataTransfer.files[0];
@@ -109,7 +63,6 @@ const AddMenuItemForm: React.FC<AddMenuItemFormProps> = ({ menuType }) => {
     event.preventDefault();
   };
 
-  // Handle clicking on the file input directly
   const handleFileInputClick = () => {
     const input = document.getElementById("fileInput") as HTMLInputElement;
     if (input) {
@@ -117,13 +70,11 @@ const AddMenuItemForm: React.FC<AddMenuItemFormProps> = ({ menuType }) => {
     }
   };
 
-  // Handle file input without resetting value
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] || null;
     handleFileChange(file);
   };
 
-  // Update portion size or price when size is selected
   const handleSizeChange = (index: number, field: string, value: string) => {
     const updatedOptions = sizeOptions.map((option, i) => {
       if (i === index) {
@@ -145,7 +96,6 @@ const AddMenuItemForm: React.FC<AddMenuItemFormProps> = ({ menuType }) => {
     setSizeOptions(updatedOptions);
   };
 
-  // Add new add-on option
   const handleAddAddOnOption = (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
@@ -156,7 +106,6 @@ const AddMenuItemForm: React.FC<AddMenuItemFormProps> = ({ menuType }) => {
     ]);
   };
 
-  // Update add-on when selected
   const handleAddOnChange = (index: number, field: string, value: string) => {
     const updatedOptions = addOnOptions.map((option, i) => {
       if (i === index) {
@@ -178,58 +127,16 @@ const AddMenuItemForm: React.FC<AddMenuItemFormProps> = ({ menuType }) => {
     setAddOnOptions(updatedOptions);
   };
 
-  // Add new side option
-  const handleAddSideOption = (
-    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
-  ) => {
-    e.preventDefault();
-    setSideOptions([
-      ...sideOptions,
-      { sideId: "", sideName: "", sidePrice: "" },
-    ]);
-  };
-
-  // Update side when selected
-  const handleSideChange = (index: number, field: string, value: string) => {
-    const updatedOptions = sideOptions.map((option, i) => {
-      if (i === index) {
-        if (field === "sideId") {
-          const selectedSide = sides.find(
-            (side) => side.id === parseInt(value)
-          );
-          return {
-            ...option,
-            sideId: value,
-            sideName: selectedSide?.name || "",
-            sidePrice: selectedSide?.amount || "",
-          };
-        }
-        return { ...option, [field]: value };
-      }
-      return option;
-    });
-    setSideOptions(updatedOptions);
-  };
-
-  // Delete portion size option
   const handleDeleteSizeOption = (index: number) => {
     const updatedOptions = sizeOptions.filter((_, i) => i !== index);
     setSizeOptions(updatedOptions);
   };
 
-  // Delete add-on option
   const handleDeleteAddOnOption = (index: number) => {
     const updatedOptions = addOnOptions.filter((_, i) => i !== index);
     setAddOnOptions(updatedOptions);
   };
 
-  // Delete side option
-  const handleDeleteSideOption = (index: number) => {
-    const updatedOptions = sideOptions.filter((_, i) => i !== index);
-    setSideOptions(updatedOptions);
-  };
-
-  // Handle tag selection
   const handleTagChange = (tagId: string) => {
     if (selectedTags.includes(tagId)) {
       setSelectedTags(selectedTags.filter((id) => id !== tagId));
@@ -242,7 +149,7 @@ const AddMenuItemForm: React.FC<AddMenuItemFormProps> = ({ menuType }) => {
     e: React.MouseEvent<HTMLFormElement, MouseEvent>
   ) => {
     e.preventDefault();
-  
+
     let category_id = 0;
     if (menuType === "Peppersoup") {
       category_id = 1;
@@ -251,72 +158,71 @@ const AddMenuItemForm: React.FC<AddMenuItemFormProps> = ({ menuType }) => {
     } else if (menuType === "Drinks") {
       category_id = 3;
     }
-  
+
     const availabilityValue = availability === "In Stock" ? 1 : 0;
-  
+
     const payload = {
       title: itemName,
       desc: description,
-      amount: total,
       availability: availabilityValue,
       category_id,
-      tag_ids: selectedTags.map((tagId) => parseInt(tagId, 10)).filter((tagId) => !isNaN(tagId)),
-      menu_item_images: itemPhoto ? [itemPhoto] : [], 
-      portion_size_ids: sizeOptions.map((option) => parseInt(option.sizeId, 10)).filter((sizeId) => !isNaN(sizeId)),
-      addson_ids: addOnOptions.map((option) => parseInt(option.addOnId, 10)).filter((addOnId) => !isNaN(addOnId)),
-      sideOptions: sideOptions.map((option) => parseInt(option.sideId, 10)).filter((sideId) => !isNaN(sideId)),
+      tag_ids: selectedTags
+        .map((tagId) => parseInt(tagId, 10))
+        .filter((tagId) => !isNaN(tagId)),
+      menu_item_images: itemPhoto ? [itemPhoto] : [],
+      portion_size_ids: sizeOptions
+        .map((option) => parseInt(option.sizeId, 10))
+        .filter((sizeId) => !isNaN(sizeId)),
+      addson_ids: addOnOptions
+        .map((option) => parseInt(option.addOnId, 10))
+        .filter((addOnId) => !isNaN(addOnId))
     };
-  
+
     const formData = new FormData();
-  
+
     formData.append("title", payload.title);
     formData.append("desc", payload.desc);
     formData.append("availability", availabilityValue.toString());
     formData.append("category_id", payload.category_id.toString());
-    formData.append("amount", total.toString());
-  
-    payload.tag_ids.forEach((tagId) => formData.append("tag_ids[]", tagId.toString()));
-  
-    // Ensure the image file is appended correctly
+    payload.tag_ids.forEach((tagId) =>
+      formData.append("tag_ids[]", tagId.toString())
+    );
+
     payload.menu_item_images.forEach((image) => {
-      console.log("Appending image:", image);  // Log the image file
       formData.append("menu_item_images[]", image);
     });
+    payload.portion_size_ids.forEach((portionSizeId) =>
+      formData.append("portion_size_ids[]", portionSizeId.toString())
+    );
+    payload.addson_ids.forEach((addonId) =>
+      formData.append("addson_ids[]", addonId.toString())
+    );
 
-    // if (itemPhoto) {
-    //   formData.append("menu_item_images[]", itemPhoto);
+    console.log("formData", Array.from(formData.entries()));
+ 
+    // try {
+    //   const response = await request(
+    //     "/api/core/kitchen-operations/menu-items/create",
+    //     "POST",
+    //     {},
+    //     // formData
+    //     payload
+    //   );
+
+    //   if (response && response.resp_code === "00") {
+    //     toast.success("Menu item added successfully!");
+    //     await refreshMenuItems();
+    //     // router.push("/home")
+    //   } else if (response && response.resp_code === "01") {
+    //     toast.error(response.resp_message);
+    //   } else {
+    //     toast.error("Failed to add menu item");
+    //   }
+    // } catch (error) {
+    //   toast.error("An error occurred. Please try again.");
+    //   console.error("Error adding menu item:", error);
     // }
-  
-    payload.portion_size_ids.forEach((portionSizeId) => formData.append("portion_size_ids[]", portionSizeId.toString()));
-    payload.addson_ids.forEach((addonId) => formData.append("addson_ids[]", addonId.toString()));
-    payload.sideOptions.forEach((sideId) => formData.append("sideOptions[]", sideId.toString()));
-  
-    try {
-      const response = await request(
-        "/api/core/kitchen-operations/menu-items/create",
-        "POST",
-        {},
-        // formData
-        payload
-      );
-  
-      console.log("formData", Array.from(formData.entries()));  // Log FormData entries
-  
-      if (response && response.resp_code === "00") {
-        toast.success("Menu item added successfully!");
-        await refreshMenuItems();
-        // router.push("/home")
-      } else if (response && response.resp_code === "01") {
-        toast.error(response.resp_message);
-      } else {
-        toast.error("Failed to add menu item");
-      }
-    } catch (error) {
-      toast.error("An error occurred. Please try again.");
-      console.error("Error adding menu item:", error);
-    }
   };
-  
 
   return (
     <div className="p-8 bg-white rounded-lg border m-2 shadow-lg">
@@ -363,7 +269,6 @@ const AddMenuItemForm: React.FC<AddMenuItemFormProps> = ({ menuType }) => {
               />
             </div>
 
-            {/* Portion Sizes */}
             <div className="mb-4">
               <label className="block text-sm font-semibold mb-2">
                 Portion Size
@@ -412,8 +317,6 @@ const AddMenuItemForm: React.FC<AddMenuItemFormProps> = ({ menuType }) => {
                 </button>
               </div>
             </div>
-
-            {/* Add-Ons */}
             <div className="mb-4">
               <label className="block text-sm font-semibold mb-2">
                 Add-Ons
@@ -462,54 +365,6 @@ const AddMenuItemForm: React.FC<AddMenuItemFormProps> = ({ menuType }) => {
                 </button>
               </div>
             </div>
-
-            {/* Sides */}
-            {/* <div className="mb-4">
-              <label className="block text-sm font-semibold mb-2">Sides</label>
-              <div className="flex flex-col space-y-2 border shadow-sm p-2">
-                {sideOptions.map((option, index) => (
-                  <div key={index} className="flex space-x-2 items-center">
-                    <select
-                      value={option.sideId}
-                      onChange={(e) =>
-                        handleSideChange(index, "sideId", e.target.value)
-                      }
-                      className="w-1/3 p-1 border rounded"
-                    >
-                      <option value="">Select Side</option>
-                      {sides.map((side) => (
-                        <option key={side.id} value={side.id}>
-                          {side.name}
-                        </option>
-                      ))}
-                    </select>
-                    <input
-                      type="text"
-                      readOnly
-                      value={option.sidePrice}
-                      onChange={(e) =>
-                        handleSideChange(index, "sidePrice", e.target.value)
-                      }
-                      className="w-1/3 p-1 border rounded"
-                      placeholder="₦ Price"
-                    />
-                    <button
-                      onClick={() => handleDeleteSideOption(index)}
-                      className="text-red-500 hover:text-red-700"
-                      title="Delete this side option"
-                    >
-                      <FaTrash />
-                    </button>
-                  </div>
-                ))}
-                <button
-                  onClick={handleAddSideOption}
-                  className="text-green-600 mt-2"
-                >
-                  + Add new side option
-                </button>
-              </div>
-            </div> */}
           </div>
 
           <div className="md:col-span-3">
@@ -546,7 +401,7 @@ const AddMenuItemForm: React.FC<AddMenuItemFormProps> = ({ menuType }) => {
                 </div>
               </div>
             </div>
-            {/* Item Photo with Preview and Drag-and-Drop */}
+
             <div className="md:col-span-3">
               <div className="mb-4">
                 <label className="block text-sm font-semibold mb-1">
@@ -561,13 +416,12 @@ const AddMenuItemForm: React.FC<AddMenuItemFormProps> = ({ menuType }) => {
                   style={{ height: "400px", position: "relative" }}
                 >
                   {imagePreview ? (
-                    // Click the image to open the file picker
                     <img
                       src={imagePreview}
                       alt="Preview"
                       className="max-h-full max-w-full cursor-pointer"
                       onClick={(e) => {
-                        e.stopPropagation(); // Prevent the click from bubbling to the parent
+                        e.stopPropagation();
                         handleFileInputClick();
                       }}
                     />
@@ -576,8 +430,6 @@ const AddMenuItemForm: React.FC<AddMenuItemFormProps> = ({ menuType }) => {
                       Drag & Drop or Click to Upload
                     </p>
                   )}
-
-                  {/* Hidden input for file upload */}
                   <input
                     id="fileInput"
                     type="file"
@@ -587,27 +439,6 @@ const AddMenuItemForm: React.FC<AddMenuItemFormProps> = ({ menuType }) => {
                   />
                 </div>
               </div>
-              <div>
-                <div className="mb-4">
-                  <label className="block text-sm font-semibold mb-2">
-                    Item Price*
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={additionalAmount}
-                    onChange={handleAdditionalAmountChange}
-                    className="w-1/3 p-1 border rounded"
-                    placeholder="₦ Custom amount"
-                  />
-                </div>
-              </div>
-            </div>
-            <div className="mb-4">
-              <label className="block text-sm font-semibold mb-2">
-                Total Price
-              </label>
-              <p className="font-bold">₦ {formatNumberWithCommas(parseFloat(total.toFixed(2)))}</p>
             </div>
           </div>
         </div>
