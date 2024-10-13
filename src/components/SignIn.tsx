@@ -46,7 +46,7 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     <div className="min-h-screen flex flex-col md:flex-row bg-gray-100">
       <div className="w-full md:w-1/2 flex flex-col bg-white shadow-lg">
         <nav className="flex items-center mb-12 border-b p-3 bg-white shadow-md">
-          <Image src="/images/logo.png" alt="Logo" width={60} height={60} />
+          <Image src="/images/logo.jpeg" alt="Logo" width={70} height={70} />
           <span className="ml-4 text-2xl font-bold">Pepper Soup Place</span>
         </nav>
 

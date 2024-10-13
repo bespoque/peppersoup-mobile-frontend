@@ -10,7 +10,7 @@ export const metadata: Metadata = {
   title: "Peppersoup Kitchen",
   description: "Peppersoup Kitchen",
   icons: {
-    icon: '/images/logo.png',
+    icon: '/images/logo.jpeg',
   },
 };
 

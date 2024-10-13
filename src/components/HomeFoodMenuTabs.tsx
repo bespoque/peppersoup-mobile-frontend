@@ -8,7 +8,7 @@ import UpdateMenuItemForm from "./UpdateMenuItemForm";
 const HomeFoodMenu = () => {
   const tabLabels = ["PepperSoup", "SideDishes", "Drinks"] as string[];
   const [activeDropdown, setActiveDropdown] = useState<number | null>(null);
-  const { menuData, loading, error } = useMenu(); 
+  const { menuData, loading, error } = useMenu();
   const [selectedMenuItem, setSelectedMenuItem] = useState<any | null>(null);
 
   const handleDropdownToggle = (index: number) => {
@@ -16,15 +16,22 @@ const HomeFoodMenu = () => {
   };
 
   const handleEditMenuItem = (menuItem: any) => {
-    setSelectedMenuItem(menuItem); // Set the selected menu item for editing
+    setSelectedMenuItem(menuItem);
   };
 
   const handleCloseModal = () => {
-    setSelectedMenuItem(null); // Close the update form
+    setSelectedMenuItem(null);
   };
 
-console.log("selectedMenuItem", selectedMenuItem);
+  console.log("selectedMenuItem", selectedMenuItem);
 
+  // Function to get the least portion size amount
+  const getLeastPortionSizeAmount = (menuItem: any) => {
+    return menuItem.menu_item_portion_size.reduce((min: any, item: any) => {
+      const amount = parseInt(item.portion.amount, 10);
+      return amount < min ? amount : min;
+    }, Infinity);
+  };
 
   const tabContent = {
     PepperSoup: (
@@ -33,12 +40,18 @@ console.log("selectedMenuItem", selectedMenuItem);
           <MenuItemCard
             key={index}
             name={item.name}
-            price={`₦${item.menu_item_portion_size[0]?.portion.amount}`}
+            // price={`₦${item.menu_item_portion_size[0]?.portion.amount}`}
+            price={`₦${getLeastPortionSizeAmount(item)}`}
             description={item.desc}
-            image={item.menu_item_images[0]?.image_link}
+            image={
+              item.availability === "1"
+                ? item.menu_item_images[0]?.image_link // Path to the fallback image
+                : "/images/menu/outstock.png"
+            }
+            // image={item.menu_item_images[0]?.image_link}
             tags={item.menu_item_tags.map((tag) => tag.tag.name)}
-            isDropdownActive={activeDropdown === index} 
-            onDropdownToggle={() => handleDropdownToggle(index)} 
+            isDropdownActive={activeDropdown === index}
+            onDropdownToggle={() => handleDropdownToggle(index)}
             onEdit={() => handleEditMenuItem(item)}
           />
         ))}
@@ -55,7 +68,7 @@ console.log("selectedMenuItem", selectedMenuItem);
             image={item.menu_item_images[0]?.image_link}
             tags={item.menu_item_tags.map((tag) => tag.tag.name)}
             isDropdownActive={activeDropdown === index}
-            onDropdownToggle={() => handleDropdownToggle(index)} 
+            onDropdownToggle={() => handleDropdownToggle(index)}
             onEdit={() => handleEditMenuItem(item)}
           />
         ))}
@@ -92,7 +105,7 @@ console.log("selectedMenuItem", selectedMenuItem);
             <UpdateMenuItemForm
               menuItem={selectedMenuItem}
               onUpdate={(updatedItem) => {
-                console.log('Updated item:', updatedItem);
+                console.log("Updated item:", updatedItem);
                 setSelectedMenuItem(null); // Close the form after update
               }}
               onClose={handleCloseModal} // Pass close function

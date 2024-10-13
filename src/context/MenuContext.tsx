@@ -16,6 +16,7 @@ interface MenuItem {
   menu_item_images: { image_link: string }[];
   menu_item_portion_size: { portion: { amount: number } }[];
   menu_item_tags: { tag: { name: string } }[];
+  availability: string
 }
 
 interface ApiResponse {

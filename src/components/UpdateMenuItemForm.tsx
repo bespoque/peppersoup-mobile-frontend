@@ -1,8 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useTags } from "@/src/context/TagsContext";
 import { usePortionSizes } from "@/src/context/PortionSizesContext";
 import { useAddOns } from "@/src/context/AddonsContext";
-import Image from "next/image";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { useApi } from "../hooks/useApi";
+import { useMenu } from "../context/MenuContext";
 
 interface UpdateMenuItemFormProps {
   menuItem: any;
@@ -17,11 +20,13 @@ const UpdateMenuItemForm = ({
 }: UpdateMenuItemFormProps) => {
   const [name, setName] = useState(menuItem.name || "");
   const [description, setDescription] = useState(menuItem.desc || "");
+  const { request, loading } = useApi();
+  const { refreshMenuItems } = useMenu();
   const [availability, setAvailability] = useState(
-    menuItem.availability || "In Stock"
+    menuItem.availability === "1" ? "In Stock" : "Out of Stock"
   );
-  const [tags, setTags] = useState<string[]>(
-    menuItem.menu_item_tags.map((tag: any) => tag.tag.name) || []
+  const [selectedTags, setSelectedTags] = useState<number[]>(
+    menuItem.menu_item_tags.map((tag: any) => tag.tag.id) || []
   );
   const [selectedPortionSizes, setSelectedPortionSizes] = useState<any[]>(
     menuItem.menu_item_portion_size.map((portion: any) => ({
@@ -37,14 +42,20 @@ const UpdateMenuItemForm = ({
     })) || []
   );
   const [selectedImage, setSelectedImage] = useState<string | null>(
-    menuItem.menu_item_images[0]?.image_link || null // Use the first image from the images array
+    menuItem.menu_item_images[0]?.image_link || null
   );
-
-  console.log("selectedAddOns", selectedAddOns);
 
   const { tags: availableTags } = useTags();
   const { portionSizes } = usePortionSizes();
   const { addOns } = useAddOns();
+
+  const handleTagChange = (tagId: number) => {
+    setSelectedTags((prev) =>
+      prev.includes(tagId)
+        ? prev.filter((id) => id !== tagId)
+        : [...prev, tagId]
+    );
+  };
 
   const handlePortionSizeChange = (portionSizeId: number) => {
     setSelectedPortionSizes((prev) =>
@@ -76,18 +87,42 @@ const UpdateMenuItemForm = ({
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const updatedItem = {
-      ...menuItem,
-      name,
-      description,
-      availability,
-      tags,
-      portionSizes: selectedPortionSizes,
-      addOns: selectedAddOns,
-      image: selectedImage, // Include the updated image in the updated item
+      title: name,
+      desc: description,
+      availability: availability === "In Stock" ? "1" : "0",
+      tag_ids: Array.from(new Set(selectedTags)), // Remove duplicates from tag_ids
+      category_id: menuItem.category_id,
+      portion_size_ids: Array.from(
+        new Set(selectedPortionSizes.map((portion) => portion.id))
+      ), // Remove duplicates from portion_size_ids
+      addson_ids: Array.from(new Set(selectedAddOns.map((addOn) => addOn.id))), // Remove duplicates from addson_ids
+      menu_item_images: [selectedImage],
+      id: menuItem?.id,
     };
+
+    try {
+      const response = await request(
+        "/api/core/kitchen-operations/menu-items/edit",
+        "POST",
+        {},
+        updatedItem
+      );
+
+      if (response && response.resp_code === "00") {
+        toast.success("Menu item updated successfully!");
+        await refreshMenuItems();
+      } else if (response && response.resp_code === "01") {
+        toast.error(response.resp_message);
+      } else {
+        toast.error("Failed to update menu item");
+      }
+    } catch (error) {
+      toast.error("An error occurred. Please try again.");
+      console.error("Error updation menu item:", error);
+    }
     onUpdate(updatedItem);
   };
 
@@ -96,162 +131,159 @@ const UpdateMenuItemForm = ({
   };
 
   return (
-    <div className="space-y-2 max-h-[80vh] overflow-y-auto px-4">
-      <form onSubmit={handleSubmit}>
-        <div className="flex justify-between items-center">
-          <button
-            type="button"
-            onClick={onClose}
-            className="text-gray-500 hover:text-gray-700"
-          >
-            ✖️
-          </button>
-          <button
-            type="submit"
-            className="px-4 py-2 bg-green-500 text-white rounded"
-          >
-            Update Menu Item
-          </button>
-        </div>
-        <h2 className="text-2xl mb-4">Update Menu Item</h2>
-
-        <div className="grid grid-cols-3 gap-6">
-          {/* Left Column */}
-          <div className="col-span-1">
-            <div className="mb-4">
-              <label className="block text-sm font-medium">Item Name*</label>
-              <input
-                type="text"
-                className="block w-full p-2 border border-gray-300 rounded"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-              />
-            </div>
-
-            <div className="mb-4">
-              <label className="block text-sm font-medium">
-                Brief Description (Max 150 characters)*
-              </label>
-              <textarea
-                className="block w-full p-2 border border-gray-300 rounded"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                maxLength={150}
-              />
-            </div>
-
-            {/* Portion Sizes */}
-            <label className="block text-sm font-medium">Portion Sizes</label>
-            <div className="mb-4 border rounded-md border-gray-400 p-2">
-              <div className="grid grid-cols-2 gap-2">
-                {portionSizes.map((portion) => (
-                  <label
-                    key={portion.id}
-                    className="flex items-center space-x-2"
-                  >
-                    <input
-                      type="checkbox"
-                      checked={selectedPortionSizes.some(
-                        (p) => p.id === portion.id
-                      )}
-                      onChange={() => handlePortionSizeChange(portion.id)}
-                    />
-                    <span>
-                      {portion.name} -{" "}
-                      {formatNumberWithCommas(parseFloat(portion.amount))}
-                    </span>
-                  </label>
-                ))}
-              </div>
-            </div>
-
-            {/* Add-ons */}
-            <label className="block text-sm font-medium">Add-ons</label>
-            <div className="mb-4 border rounded-md border-gray-400 p-2">
-              <div className="grid grid-cols-2 gap-2">
-                {addOns.map((addOn) => (
-                  <label key={addOn.id} className="flex items-center space-x-2">
-                    <input
-                      type="checkbox"
-                      checked={selectedAddOns.some((a) => a.id === addOn.id)}
-                      onChange={() => handleAddOnChange(addOn.id)}
-                    />
-                    <span>
-                      {addOn.name} -{" "}
-                      {formatNumberWithCommas(parseFloat(addOn.amount))}
-                    </span>
-                  </label>
-                ))}
-              </div>
-            </div>
+    <>
+      <ToastContainer />
+      <div className="space-y-2 max-h-[80vh] overflow-y-auto px-4">
+        <form onSubmit={handleSubmit}>
+          <div className="flex justify-between items-center">
+            <button
+              type="button"
+              onClick={onClose}
+              disabled={loading}
+              className="text-gray-500 hover:text-gray-700"
+            >
+              ✖️
+            </button>
+            <button
+              type="submit"
+              disabled={loading}
+              className="px-4 py-2 bg-green-500 text-white rounded"
+            >
+              {loading ? "Updating..." : "Update Menu Item"}
+            </button>
           </div>
+          <h2 className="text-2xl mb-4">Update Menu Item</h2>
 
-          {/* Right Column */}
-          <div className="col-span-2">
-            <div className="flex gap-4 mb-4">
-              <div className="w-full">
-                <label className="block text-sm font-medium">
-                  Availability*
-                </label>
-                <select
-                  value={availability}
-                  onChange={(e) => setAvailability(e.target.value)}
+          <div className="grid grid-cols-3 gap-6">
+            <div className="col-span-1">
+              <div className="mb-4">
+                <label className="block text-sm font-medium">Item Name*</label>
+                <input
+                  type="text"
                   className="block w-full p-2 border border-gray-300 rounded"
-                >
-                  <option value="In Stock">In Stock</option>
-                  <option value="Out of Stock">Out of Stock</option>
-                </select>
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                />
               </div>
 
-              <div className="w-full">
-                <label className="block text-sm font-medium">Tags*</label>
+              <div className="mb-4">
+                <label className="block text-sm font-medium">
+                  Brief Description (Max 150 characters)*
+                </label>
+                <textarea
+                  className="block w-full p-2 border border-gray-300 rounded"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  maxLength={150}
+                />
+              </div>
+
+              <label className="block text-sm font-medium">Portion Sizes</label>
+              <div className="mb-4 border rounded-md border-gray-400 p-2">
                 <div className="grid grid-cols-2 gap-2">
-                  {availableTags.map((tag) => (
-                    <label key={tag.id} className="flex items-center space-x-2">
+                  {portionSizes.map((portion) => (
+                    <label
+                      key={portion.id}
+                      className="flex items-center space-x-2"
+                    >
                       <input
                         type="checkbox"
-                        checked={tags.includes(tag.name)}
-                        onChange={() =>
-                          setTags((prev) =>
-                            prev.includes(tag.name)
-                              ? prev.filter((t) => t !== tag.name)
-                              : [...prev, tag.name]
-                          )
-                        }
+                        checked={selectedPortionSizes.some(
+                          (p) => p.id === portion.id
+                        )}
+                        onChange={() => handlePortionSizeChange(portion.id)}
                       />
-                      <span>{tag.name}</span>
+                      <span>
+                        {portion.name} -{" "}
+                        {formatNumberWithCommas(parseFloat(portion.amount))}
+                      </span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              <label className="block text-sm font-medium">Add-ons</label>
+              <div className="mb-4 border rounded-md border-gray-400 p-2">
+                <div className="grid grid-cols-2 gap-2">
+                  {addOns.map((addOn) => (
+                    <label
+                      key={addOn.id}
+                      className="flex items-center space-x-2"
+                    >
+                      <input
+                        type="checkbox"
+                        checked={selectedAddOns.some((a) => a.id === addOn.id)}
+                        onChange={() => handleAddOnChange(addOn.id)}
+                      />
+                      <span>{addOn.name}</span>
                     </label>
                   ))}
                 </div>
               </div>
             </div>
 
-            {/* Image Preview and Upload */}
-            <label className="block text-sm text-center font-medium">
-              Menu Item Image
-            </label>
-            <div
-              className="mb-4 border rounded-md border-gray-400 p-4 flex justify-center items-center"
-              style={{ height: "400px", position: "relative" }}
-            >
-              {selectedImage && (
-                <img
-                  src={selectedImage}
-                  alt="Menu Item"
-                  className="mt-2 mb-2 w-full h-full object-cover border border-gray-300 rounded"
-                />
-              )}
+            <div className="col-span-2">
+              <div className="flex gap-4 mb-4">
+                <div className="w-full">
+                  <label className="block text-sm font-medium">
+                    Availability*
+                  </label>
+                  <select
+                    value={availability}
+                    onChange={(e) => setAvailability(e.target.value)}
+                    className="block w-full p-2 border border-gray-300 rounded"
+                  >
+                    <option value="Out of Stock">Out of Stock</option>
+                    <option value="In Stock">In Stock</option>
+                  </select>
+                </div>
+
+                <div className="w-full">
+                  <label className="block text-sm font-medium">Tags*</label>
+                  <div className="grid grid-cols-2 gap-2">
+                    {availableTags.map((tag) => (
+                      <label
+                        key={tag.id}
+                        className="flex items-center space-x-2"
+                      >
+                        <input
+                          type="checkbox"
+                          checked={selectedTags.includes(tag.id)}
+                          onChange={() => handleTagChange(tag.id)}
+                        />
+                        <span>{tag.name}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <label className="block text-sm text-center font-medium">
+                Menu Item Image
+              </label>
+              <div
+                className="mb-4 border rounded-md border-gray-400 p-4 flex justify-center items-center"
+                style={{ height: "400px", position: "relative" }}
+              >
+                {selectedImage && (
+                  <img
+                    src={selectedImage}
+                    alt="Menu Item"
+                    className="mt-2 mb-2 w-full h-full object-cover border border-gray-300 rounded"
+                  />
+                )}
+              </div>
+              <input
+                type="file"
+                onChange={handleImageChange}
+                accept="image/*"
+                className="block w-full mb-4 text-sm"
+              />
             </div>
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleImageChange}
-              className="block w-full p-2 border border-gray-300 rounded"
-            />
           </div>
-        </div>
-      </form>
-    </div>
+        </form>
+      </div>
+    </>
   );
 };
 

@@ -48,7 +48,7 @@ const Navbar = () => {
       <div className="flex items-center justify-between p-4 border">
         <div className="flex gap-2">
           <div className="p-3 border-r-2">
-            <Image src="/images/logo.png" alt="Logo" width={50} height={50} />
+            <Image src="/images/logo.jpeg" alt="Logo" width={70} height={70} />
           </div>
           <button
             className="block md:hidden w-10 h-10 bg-gray-200 rounded-lg flex items-center justify-center"
