@@ -105,6 +105,8 @@ const AddMenuItemForm: React.FC<AddMenuItemFormProps> = ({ menuType }) => {
     ]);
   };
 
+  console.log("itemPhoto", itemPhoto);
+
   const handleAddOnChange = (index: number, field: string, value: string) => {
     const updatedOptions = addOnOptions.map((option, i) => {
       if (i === index) {
@@ -160,59 +162,56 @@ const AddMenuItemForm: React.FC<AddMenuItemFormProps> = ({ menuType }) => {
 
     const availabilityValue = availability === "In Stock" ? 1 : 0;
 
-    const payload = {
-      title: itemName,
-      desc: description,
-      availability: availabilityValue,
-      category_id,
-      tag_ids: selectedTags
-        .map((tagId) => parseInt(tagId, 10))
-        .filter((tagId) => !isNaN(tagId)),
-      menu_item_images: itemPhoto ? [itemPhoto] : [],
-      portion_size_ids: sizeOptions
-        .map((option) => parseInt(option.sizeId, 10))
-        .filter((sizeId) => !isNaN(sizeId)),
-      addson_ids: addOnOptions
-        .map((option) => parseInt(option.addOnId, 10))
-        .filter((addOnId) => !isNaN(addOnId)),
-    };
-
     const formData = new FormData();
-
-    formData.append("title", payload.title);
-    formData.append("desc", payload.desc);
+    formData.append("title", itemName);
+    formData.append("desc", description);
     formData.append("availability", availabilityValue.toString());
-    formData.append("category_id", payload.category_id.toString());
-    payload.tag_ids.forEach((tagId) =>
-      formData.append("tag_ids[]", tagId.toString())
-    );
+    formData.append("category_id", category_id.toString());
 
-    payload.menu_item_images.forEach((image) => {
-      formData.append("menu_item_images[]", image);
+    // Append each tag ID
+    selectedTags.forEach((tagId) => {
+      formData.append("tag_ids[]", tagId);
     });
-    payload.portion_size_ids.forEach((portionSizeId) =>
-      formData.append("portion_size_ids[]", portionSizeId.toString())
-    );
-    payload.addson_ids.forEach((addonId) =>
-      formData.append("addson_ids[]", addonId.toString())
-    );
 
-    console.log("formData", Array.from(formData.entries()));
-    console.log("payload", payload);
+    // Append the image file if present
+    if (itemPhoto) {
+      console.log("Item photo confirmed");
+
+      formData.append("menu_item_images[]", itemPhoto);
+    }
+
+    // Append portion size IDs
+    sizeOptions.forEach((option) => {
+      if (option.sizeId) {
+        formData.append("portion_size_ids[]", option.sizeId);
+      }
+    });
+
+    // Append add-ons
+    addOnOptions.forEach((option) => {
+      if (option.addOnId) {
+        formData.append("addson_ids[]", option.addOnId);
+      }
+    });
+
+    console.log("FormData:", Array.from(formData.entries())); // For debugging
 
     try {
       const response = await request(
         "/api/core/kitchen-operations/menu-items/create",
         "POST",
         {},
-        // formData
-        payload
+        formData,
+        true
+        // null, // Pass null as headers because FormData automatically sets appropriate headers
+        // true  // Pass true to indicate a form data request
       );
+      console.log("formData", formData);
 
       if (response && response.resp_code === "00") {
         toast.success("Menu item added successfully!");
         await refreshMenuItems();
-        router.push("/home")
+        router.push("/home");
       } else if (response && response.resp_code === "01") {
         toast.error(response.resp_message);
       } else {

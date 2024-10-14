@@ -12,7 +12,8 @@ export const useApi = () => {
     endpoint: string, 
     method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE", 
     params = {}, 
-    data = {}  
+    data = {}, 
+    isFormData = false // Add flag to indicate if FormData is being sent
   ) => {
     setLoading(true);
     setError(null);
@@ -24,7 +25,8 @@ export const useApi = () => {
         url: `${BASE_URL}${endpoint}`,
         method,
         headers: {
-          "Content-Type": "application/json",
+          // Don't set Content-Type header if sending FormData; the browser will set it automatically
+          ...(isFormData ? {} : { "Content-Type": "application/json" }),
           "UserId": "admin@gmail.com",
           "UserType": "1",
           Authorization: `Bearer ${token}`,
