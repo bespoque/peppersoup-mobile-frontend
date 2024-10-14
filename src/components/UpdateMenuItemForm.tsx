@@ -42,7 +42,7 @@ const UpdateMenuItemForm = ({
     })) || []
   );
   const [selectedImage, setSelectedImage] = useState<string | null>(
-    menuItem.menu_item_images[0]?.image_link || null
+    menuItem.menu_item_images[menuItem.menu_item_images.length - 1]?.image_link || null
   );
 
   const { tags: availableTags } = useTags();
@@ -97,7 +97,7 @@ const UpdateMenuItemForm = ({
       category_id: menuItem.category_id,
       portion_size_ids: Array.from(
         new Set(selectedPortionSizes.map((portion) => portion.id))
-      ), // Remove duplicates from portion_size_ids
+      ), 
       addson_ids: Array.from(new Set(selectedAddOns.map((addOn) => addOn.id))), // Remove duplicates from addson_ids
       menu_item_images: [selectedImage],
       id: menuItem?.id,

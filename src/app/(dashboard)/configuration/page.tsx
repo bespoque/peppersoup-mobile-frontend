@@ -61,12 +61,12 @@ export default function Configuration() {
             }}
           >
             <ul className="space-y-2">
-              <li
+              {/* <li
                 className="hover:bg-cyan-900 hover:text-white rounded-md cursor-pointer"
                 onClick={() => handleMenuSelection("category")}
               >
                 <button className="p-1">Category</button>
-              </li>
+              </li> */}
               <li
                 className="hover:bg-cyan-900 hover:text-white rounded-md cursor-pointer"
                 onClick={() => handleMenuSelection("tag")}

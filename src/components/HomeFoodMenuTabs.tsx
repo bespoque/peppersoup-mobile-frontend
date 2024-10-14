@@ -40,14 +40,12 @@ const HomeFoodMenu = () => {
           <MenuItemCard
             key={index}
             name={item.name}
+            availability={item.availability}
             // price={`₦${item.menu_item_portion_size[0]?.portion.amount}`}
             price={`₦${getLeastPortionSizeAmount(item)}`}
             description={item.desc}
-            image={
-              item.availability === "1"
-                ? item.menu_item_images[0]?.image_link // Path to the fallback image
-                : "/images/menu/outstock.png"
-            }
+            image={item.menu_item_images[item.menu_item_images.length - 1]?.image_link}
+
             // image={item.menu_item_images[0]?.image_link}
             tags={item.menu_item_tags.map((tag) => tag.tag.name)}
             isDropdownActive={activeDropdown === index}
@@ -61,11 +59,14 @@ const HomeFoodMenu = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {menuData.SideDishes.map((item, index) => (
           <MenuItemCard
+          availability={item.availability}
             key={index}
             name={item.name}
             price={`₦${item.menu_item_portion_size[0]?.portion.amount}`}
             description={item.desc}
-            image={item.menu_item_images[0]?.image_link}
+            // image={item.menu_item_images[0]?.image_link}
+            image={item.menu_item_images[item.menu_item_images.length - 1]?.image_link}
+
             tags={item.menu_item_tags.map((tag) => tag.tag.name)}
             isDropdownActive={activeDropdown === index}
             onDropdownToggle={() => handleDropdownToggle(index)}
@@ -78,11 +79,13 @@ const HomeFoodMenu = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {menuData.Drinks.map((item, index) => (
           <MenuItemCard
+          availability={item.availability}
             key={index}
             name={item.name}
             price={`₦${item.menu_item_portion_size[0]?.portion.amount}`}
             description={item.desc}
-            image={item.menu_item_images[0]?.image_link}
+            // image={item.menu_item_images[0]?.image_link}
+            image={item.menu_item_images[item.menu_item_images.length - 1]?.image_link}
             tags={item.menu_item_tags.map((tag) => tag.tag.name)}
             isDropdownActive={activeDropdown === index}
             onDropdownToggle={() => handleDropdownToggle(index)}

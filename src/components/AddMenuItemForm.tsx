@@ -34,7 +34,6 @@ const AddMenuItemForm: React.FC<AddMenuItemFormProps> = ({ menuType }) => {
   const { tags } = useTags();
   const { addOns } = useAddOns();
 
-
   const handleAddSizeOption = (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
@@ -175,7 +174,7 @@ const AddMenuItemForm: React.FC<AddMenuItemFormProps> = ({ menuType }) => {
         .filter((sizeId) => !isNaN(sizeId)),
       addson_ids: addOnOptions
         .map((option) => parseInt(option.addOnId, 10))
-        .filter((addOnId) => !isNaN(addOnId))
+        .filter((addOnId) => !isNaN(addOnId)),
     };
 
     const formData = new FormData();
@@ -199,29 +198,30 @@ const AddMenuItemForm: React.FC<AddMenuItemFormProps> = ({ menuType }) => {
     );
 
     console.log("formData", Array.from(formData.entries()));
- 
-    // try {
-    //   const response = await request(
-    //     "/api/core/kitchen-operations/menu-items/create",
-    //     "POST",
-    //     {},
-    //     // formData
-    //     payload
-    //   );
+    console.log("payload", payload);
 
-    //   if (response && response.resp_code === "00") {
-    //     toast.success("Menu item added successfully!");
-    //     await refreshMenuItems();
-    //     // router.push("/home")
-    //   } else if (response && response.resp_code === "01") {
-    //     toast.error(response.resp_message);
-    //   } else {
-    //     toast.error("Failed to add menu item");
-    //   }
-    // } catch (error) {
-    //   toast.error("An error occurred. Please try again.");
-    //   console.error("Error adding menu item:", error);
-    // }
+    try {
+      const response = await request(
+        "/api/core/kitchen-operations/menu-items/create",
+        "POST",
+        {},
+        // formData
+        payload
+      );
+
+      if (response && response.resp_code === "00") {
+        toast.success("Menu item added successfully!");
+        await refreshMenuItems();
+        router.push("/home")
+      } else if (response && response.resp_code === "01") {
+        toast.error(response.resp_message);
+      } else {
+        toast.error("Failed to add menu item");
+      }
+    } catch (error) {
+      toast.error("An error occurred. Please try again.");
+      console.error("Error adding menu item:", error);
+    }
   };
 
   return (
@@ -233,7 +233,7 @@ const AddMenuItemForm: React.FC<AddMenuItemFormProps> = ({ menuType }) => {
       <form onSubmit={handleSubmit}>
         <div className="mt-6 flex justify-end">
           <button
-            className="px-4 py-2 bg-paleGreen font-semibold text-black shadow-lg rounded-lg"
+            className="px-4 py-2 bg-paleGreen font-semibold text-black shadow-lg cursor-pointer rounded-lg"
             disabled={loading}
           >
             {loading ? "Adding..." : "Add to menu"}

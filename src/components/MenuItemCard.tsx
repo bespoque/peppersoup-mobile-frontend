@@ -7,6 +7,7 @@ export interface MenuItem {
   description: string;
   image: string;
   tags: string[];
+  availability: string; // Added availability prop
 }
 
 interface MenuItemCardProps extends MenuItem {
@@ -21,6 +22,7 @@ const MenuItemCard = ({
   description,
   image,
   tags,
+  availability,  // Use availability in props
   onDropdownToggle,
   isDropdownActive,
   onEdit,
@@ -30,7 +32,7 @@ const MenuItemCard = ({
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        onDropdownToggle(); 
+        onDropdownToggle();
       }
     };
 
@@ -41,18 +43,27 @@ const MenuItemCard = ({
     };
   }, [onDropdownToggle]);
 
-
-const uniqueTags = Array.from(new Set(tags));
+  const uniqueTags = Array.from(new Set(tags));
 
   return (
     <div className="p-4 bg-white w-96 shadow rounded-lg flex items-start gap-4 relative">
-      <Image
-        src={image}
-        alt={name}
-        width={"155"}
-        height={"150"}
-        className="object-cover rounded-lg"
-      />
+      {/* Image container with overlay */}
+      <div className="relative">
+        <Image
+          src={image}
+          alt={name}
+          width={"155"}
+          height={"150"}
+          className="object-cover rounded-lg"
+        />
+
+        {/* Conditional overlay if availability === "0" */}
+        {availability === "0" && (
+          <div className="absolute inset-0 bg-gray-800 bg-opacity-60 flex items-center justify-center rounded-lg">
+            <span className="text-white text-lg font-bold">Out of Stock</span>
+          </div>
+        )}
+      </div>
 
       <div className="flex-1">
         <div className="relative">
@@ -64,7 +75,10 @@ const uniqueTags = Array.from(new Set(tags));
           </button>
 
           {isDropdownActive && (
-            <div ref={dropdownRef} className="absolute top-8 right-0 mt-2 w-52 bg-white border rounded shadow-lg z-10">
+            <div
+              ref={dropdownRef}
+              className="absolute top-8 right-0 mt-2 w-52 bg-white border rounded shadow-lg z-10"
+            >
               <ul className="py-1">
                 <li
                   className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
@@ -72,12 +86,6 @@ const uniqueTags = Array.from(new Set(tags));
                 >
                   Edit this Item
                 </li>
-                {/* <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">
-                  Set as Out of Stock
-                </li>
-                <li className="px-4 py-2 text-red-600 hover:bg-gray-100 cursor-pointer">
-                  Delete this Item
-                </li> */}
               </ul>
             </div>
           )}
