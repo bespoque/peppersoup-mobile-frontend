@@ -6,6 +6,7 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useApi } from "../hooks/useApi";
 import { useMenu } from "../context/MenuContext";
+import { isBase64File, base64ToFile } from "../utils/fileUtils"; // Import the functions
 
 interface UpdateMenuItemFormProps {
   menuItem: any;
@@ -105,42 +106,17 @@ const UpdateMenuItemForm = ({
       id: menuItem?.id,
     };
 
-    // Convert base64 to File object for image upload
-    function base64ToFile(base64String: string, filename: string): File {
-      const arr = base64String.split(",");
-      const mimeMatch = arr[0].match(/:(.*?);/);
-      if (!mimeMatch) {
-        throw new Error("Invalid base64 string: MIME type not found.");
-      }
-      const mime = mimeMatch[1];
-      const bstr = atob(arr[1]);
-      const n = bstr.length;
-      const u8arr = new Uint8Array(n);
-      for (let i = 0; i < n; i++) {
-        u8arr[i] = bstr.charCodeAt(i);
-      }
-      return new File([u8arr], filename, { type: mime });
-    }
+   const fileString = `${selectedImage}`;
+   const base64String = `${selectedImage}`;
+   console.log("is file", isBase64File(fileString)); // true if valid base64 file
 
-    //check for base64
-    function isBase64File(base64String: string): boolean {
-      const base64Pattern = /^data:(.*?);base64,/; // Check for Base64 prefix
-      return base64Pattern.test(base64String);
-    }
-
-    // Usage
-    const fileString = `${selectedImage}`;
-    console.log("is file", isBase64File(fileString)); // true if valid base64 file
-
-
-    const base64String = `${selectedImage}`;
-    let fileMain;
-    if (isBase64File(fileString)) {
-      const file = base64ToFile(base64String, "image.jpg");
-      fileMain = file;
-    } else {
-      fileMain = selectedImage;
-    }
+   let fileMain;
+   if (isBase64File(fileString)) {
+     const file = base64ToFile(base64String, "image.jpg");
+     fileMain = file;
+   } else {
+     fileMain = selectedImage;
+   }
 
     const formData = new FormData();
     formData.append("title", name);
