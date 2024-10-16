@@ -105,7 +105,6 @@ const AddMenuItemForm: React.FC<AddMenuItemFormProps> = ({ menuType }) => {
     ]);
   };
 
-  console.log("itemPhoto", itemPhoto);
 
   const handleAddOnChange = (index: number, field: string, value: string) => {
     const updatedOptions = addOnOptions.map((option, i) => {
@@ -175,8 +174,6 @@ const AddMenuItemForm: React.FC<AddMenuItemFormProps> = ({ menuType }) => {
 
     // Append the image file if present
     if (itemPhoto) {
-      console.log("Item photo confirmed");
-
       formData.append("menu_item_images[]", itemPhoto);
     }
 
@@ -194,7 +191,6 @@ const AddMenuItemForm: React.FC<AddMenuItemFormProps> = ({ menuType }) => {
       }
     });
 
-    console.log("FormData:", Array.from(formData.entries())); // For debugging
 
     try {
       const response = await request(
@@ -203,10 +199,7 @@ const AddMenuItemForm: React.FC<AddMenuItemFormProps> = ({ menuType }) => {
         {},
         formData,
         true
-        // null, // Pass null as headers because FormData automatically sets appropriate headers
-        // true  // Pass true to indicate a form data request
       );
-      console.log("formData", formData);
 
       if (response && response.resp_code === "00") {
         toast.success("Menu item added successfully!");
@@ -258,6 +251,7 @@ const AddMenuItemForm: React.FC<AddMenuItemFormProps> = ({ menuType }) => {
                 Brief Description of Item* (Max 15 words)
               </label>
               <textarea
+              
                 value={description}
                 required
                 maxLength={100}

@@ -42,7 +42,8 @@ const UpdateMenuItemForm = ({
     })) || []
   );
   const [selectedImage, setSelectedImage] = useState<string | null>(
-    menuItem.menu_item_images[menuItem.menu_item_images.length - 1]?.image_link || null
+    menuItem.menu_item_images[menuItem.menu_item_images.length - 1]
+      ?.image_link || null
   );
 
   const { tags: availableTags } = useTags();
@@ -89,40 +90,105 @@ const UpdateMenuItemForm = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     const updatedItem = {
       title: name,
       desc: description,
       availability: availability === "In Stock" ? "1" : "0",
-      tag_ids: Array.from(new Set(selectedTags)), // Remove duplicates from tag_ids
+      tag_ids: Array.from(new Set(selectedTags)),
       category_id: menuItem.category_id,
       portion_size_ids: Array.from(
         new Set(selectedPortionSizes.map((portion) => portion.id))
-      ), 
-      addson_ids: Array.from(new Set(selectedAddOns.map((addOn) => addOn.id))), // Remove duplicates from addson_ids
+      ),
+      addson_ids: Array.from(new Set(selectedAddOns.map((addOn) => addOn.id))),
       menu_item_images: [selectedImage],
       id: menuItem?.id,
     };
+
+    // Convert base64 to File object for image upload
+    function base64ToFile(base64String: string, filename: string): File {
+      const arr = base64String.split(",");
+      const mimeMatch = arr[0].match(/:(.*?);/);
+      if (!mimeMatch) {
+        throw new Error("Invalid base64 string: MIME type not found.");
+      }
+      const mime = mimeMatch[1];
+      const bstr = atob(arr[1]);
+      const n = bstr.length;
+      const u8arr = new Uint8Array(n);
+      for (let i = 0; i < n; i++) {
+        u8arr[i] = bstr.charCodeAt(i);
+      }
+      return new File([u8arr], filename, { type: mime });
+    }
+
+    //check for base64
+    function isBase64File(base64String: string): boolean {
+      const base64Pattern = /^data:(.*?);base64,/; // Check for Base64 prefix
+      return base64Pattern.test(base64String);
+    }
+
+    // Usage
+    const fileString = `${selectedImage}`;
+    console.log("is file", isBase64File(fileString)); // true if valid base64 file
+
+
+    const base64String = `${selectedImage}`;
+    let fileMain;
+    if (isBase64File(fileString)) {
+      const file = base64ToFile(base64String, "image.jpg");
+      fileMain = file;
+    } else {
+      fileMain = selectedImage;
+    }
+
+    const formData = new FormData();
+    formData.append("title", name);
+    formData.append("desc", description);
+    formData.append("availability", availability === "In Stock" ? "1" : "0");
+    formData.append("category_id", String(menuItem.category_id));
+    formData.append("id", String(menuItem.id));
+
+    // Append portion size IDs without square brackets
+    updatedItem.portion_size_ids.forEach((id) => {
+      formData.append("portion_size_ids[]", id); // Remove []
+    });
+
+    // Append tag IDs without square brackets
+    updatedItem.tag_ids.forEach((id) => {
+      formData.append("tag_ids[]", id.toString()); // Remove []
+    });
+
+    // Append add-on IDs without square brackets
+    updatedItem.addson_ids.forEach((id) => {
+      formData.append("addson_ids[]", id.toString()); // Remove []
+    });
+
+    // Append image if present
+    if (fileMain && fileMain instanceof File) {
+      formData.append("menu_item_images[]", fileMain);
+    }
 
     try {
       const response = await request(
         "/api/core/kitchen-operations/menu-items/edit",
         "POST",
         {},
-        updatedItem
+        formData,
+        true
       );
 
       if (response && response.resp_code === "00") {
         toast.success("Menu item updated successfully!");
         await refreshMenuItems();
-      } else if (response && response.resp_code === "01") {
-        toast.error(response.resp_message);
       } else {
-        toast.error("Failed to update menu item");
+        toast.error(response?.resp_message);
       }
     } catch (error) {
       toast.error("An error occurred. Please try again.");
-      console.error("Error updation menu item:", error);
+      console.error("Error updating menu item:", error);
     }
+
     onUpdate(updatedItem);
   };
 
@@ -160,6 +226,7 @@ const UpdateMenuItemForm = ({
                 <label className="block text-sm font-medium">Item Name*</label>
                 <input
                   type="text"
+                  required
                   className="block w-full p-2 border border-gray-300 rounded"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
@@ -171,10 +238,11 @@ const UpdateMenuItemForm = ({
                   Brief Description (Max 150 characters)*
                 </label>
                 <textarea
+                  required
                   className="block w-full p-2 border border-gray-300 rounded"
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  maxLength={150}
+                  maxLength={70}
                 />
               </div>
 
