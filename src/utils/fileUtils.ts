@@ -1,4 +1,3 @@
-// src/utils/fileUtils.ts
 
 // Function to check if a string is a Base64-encoded file
 export function isBase64File(base64String: string): boolean {
