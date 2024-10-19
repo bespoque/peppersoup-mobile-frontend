@@ -7,7 +7,7 @@ export interface MenuItem {
   description: string;
   image: string;
   tags: string[];
-  availability: string; // Added availability prop
+  availability: string; 
 }
 
 interface MenuItemCardProps extends MenuItem {
@@ -22,7 +22,7 @@ const MenuItemCard = ({
   description,
   image,
   tags,
-  availability,  // Use availability in props
+  availability,  
   onDropdownToggle,
   isDropdownActive,
   onEdit,
