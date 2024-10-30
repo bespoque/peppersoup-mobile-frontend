@@ -167,24 +167,17 @@ const AddMenuItemForm: React.FC<AddMenuItemFormProps> = ({ menuType }) => {
     formData.append("availability", availabilityValue.toString());
     formData.append("category_id", category_id.toString());
 
-    // Append each tag ID
     selectedTags.forEach((tagId) => {
       formData.append("tag_ids[]", tagId);
     });
-
-    // Append the image file if present
     if (itemPhoto) {
       formData.append("menu_item_images[]", itemPhoto);
     }
-
-    // Append portion size IDs
     sizeOptions.forEach((option) => {
       if (option.sizeId) {
         formData.append("portion_size_ids[]", option.sizeId);
       }
     });
-
-    // Append add-ons
     addOnOptions.forEach((option) => {
       if (option.addOnId) {
         formData.append("addson_ids[]", option.addOnId);

@@ -1,35 +1,57 @@
+import React from "react";
+import { formatDate } from "../utils/dateUtils";
+import { formatNumberWithCommas } from "../utils/numberUtils";
 
-import React from 'react';
-import { completedOrdersData } from '../data/CompletedOrdersData';
+interface User {
+  id: number;
+  firstname: string;
+  lastname: string;
+  email: string;
+  phone: string;
+}
 
-type Order = {
-  id: string;
-  date: string;
-  customerName: string;
+interface Order {
+  id: number;
   amount: string;
-};
+  order_id: string;
+  country: string;
+  state: string;
+  city: string;
+  payment_reference: string;
+  numbers_of_order: string;
+  order_amount: string;
+  created_at: string;
+  updated_at: string;
+  users: User;
+}
 
-const CompletedOrdersTable: React.FC = () => {
+interface CompletedOrdersTableProps {
+  completedOrders: Order[];
+}
+
+const CompletedOrdersTable: React.FC<CompletedOrdersTableProps> = ({
+  completedOrders,
+}) => {
   return (
     <div className="w-full p-4">
       <table className="min-w-full mt-6 bg-white">
         <thead>
           <tr className="text-left bg-gray-100">
-            <th className="px-6 py-3">Completion Date & Time</th>
+            <th className="px-6 py-3">Order Date</th>
             <th className="px-6 py-3">Order ID</th>
             <th className="px-6 py-3">Customer Name</th>
-            <th className="px-6 py-3">Order Amount</th>
-            <th className="px-6 py-3">Actions</th>
+            <th className="px-6 py-3">Amount</th>
           </tr>
         </thead>
         <tbody>
-          {completedOrdersData.map((order, index) => (
-            <tr key={index} className="text-left bg-white border-b">
-              <td className="px-6 py-4">{order.date}</td>
-              <td className="px-6 py-4 font-semibold">{order.id}</td>
-              <td className="px-6 py-4">{order.customerName}</td>
-              <td className="px-6 py-4">{order.amount}</td>
-              <td className="px-6 py-4 text-blue-600 cursor-pointer">View</td>
+          {completedOrders.map((order) => (
+            <tr key={order.id}>
+              <td className="px-6 py-4">{formatDate(order.created_at)}</td>
+              <td className="px-6 py-4">{order.order_id}</td>
+              <td className="px-6 py-4">{order.users?.firstname} {order.users?.lastname}</td>
+              <td className="px-6 py-4">
+              ₦ {formatNumberWithCommas(parseFloat(order.amount))}
+              </td>
             </tr>
           ))}
         </tbody>

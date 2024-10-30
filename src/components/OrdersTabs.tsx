@@ -1,57 +1,66 @@
 import Tabs from "./Tabs";
-import { ordersData } from "../data/OrderData";
 import OrderCard from "./OrderCard";
 import CompletedOrdersTable from "./CompletedOrdersTable";
+import { useOrders } from "@/src/context/OrdersContext";
+import { formatDateWithTimeAndDay, timeAgo } from "../utils/dateUtils";
+import { formatNumberWithCommas } from "../utils/numberUtils";
 
 const OrdersTabs = () => {
+  const { orders, refreshOrders } = useOrders();
+console.log("ordersinside", orders);
+
   const tabLabels = ["Incoming", "Ongoing", "Completed"] as string[];
   const tabContent = {
     Incoming: (
-<div className="flex space-x-2 overflow-x-auto">
-  {ordersData.map((order, index) => (
-    <OrderCard
-      key={index}
-      time={order.time}
-      amount={order.amount}
-      paymentMethod={order.paymentMethod}
-      customerName={order.customerName}
-      uid={order.uid}
-      address={order.address}
-      orderId={order.orderId}
-      distance={order.distance}
-      orderItems={order.orderItems}
-      discount={order.discount}
-      onAcceptOrder={() => console.log("Accepted order", order.orderId)}
-      onDeclineOrder={() => console.log("Declined order", order.orderId)}
-    />
-  ))}
-</div>
-
+      <div className="flex space-x-2 overflow-x-auto">
+        {orders?.incoming_orders?.data.map((order, index) => (
+          <OrderCard
+            key={index}
+            time={formatDateWithTimeAndDay(order.created_at)}
+            amount={formatNumberWithCommas(parseFloat(order.amount))}
+            timeEllapsed={timeAgo(order.created_at)}
+            paymentMethod={order.state}
+            customerName={order.users.firstname}
+            address={order.city}
+            orderId={order.order_id}
+            id={order.id}  
+            distance={order.lat + order.long}
+            // orderItems={order.orderItems}
+            orderItems={order.menu_item.name}
+            refreshOrders={refreshOrders}
+            isOngoingOrder={false}
+          />
+        ))}
+      </div>
     ),
     Ongoing: (
       <div className="flex space-x-2 overflow-x-auto">
-        {ordersData.map((order, index) => (
+        {orders?.ongoing_orders?.data.map((order, index) => (
           <OrderCard
             key={index}
-            time={order.time}
-            amount={order.amount}
-            paymentMethod={order.paymentMethod}
-            customerName={order.customerName}
-            uid={order.uid}
-            address={order.address}
-            orderId={order.orderId}
-            distance={order.distance}
-            orderItems={order.orderItems}
-            discount={order.discount}
-            onAcceptOrder={() => console.log("Accepted order", order.orderId)}
-            onDeclineOrder={() => console.log("Declined order", order.orderId)}
+            time={formatDateWithTimeAndDay(order.created_at)}
+            amount={formatNumberWithCommas(parseFloat(order.amount))}
+            paymentMethod={order.state}
+            timeEllapsed={timeAgo(order.created_at)}
+            customerName={order.users.firstname}
+            address={order.city}
+            id={order.id}  
+            orderId={order.order_id}
+            distance={order.lat + order.long}
+            // orderItems={order.orderItems}
+            orderItems={order.menu_item.name}
+            refreshOrders={refreshOrders}
+            isOngoingOrder={true}
           />
         ))}
       </div>
     ),
     Completed: (
       <div>
-        <CompletedOrdersTable />
+        <CompletedOrdersTable
+          completedOrders={orders?.completed_orders?.data || []}
+         
+        />
       </div>
     ),
   };

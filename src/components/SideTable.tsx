@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { useSides } from "@/src/context/SidesContext";
 import { BiEdit } from "react-icons/bi";
 import UpdateSideModal from "./UpdateSideModal";
+import { formatDate } from "../utils/dateUtils";
+import { formatNumberWithCommas } from "../utils/numberUtils";
 const SideTable: React.FC = () => {
   const { sides } = useSides();
   const [currentSIde, setCurrentSide] = useState<any | null>(null);
@@ -25,19 +27,6 @@ const SideTable: React.FC = () => {
     if (currentPage > 1) {
       setCurrentPage(currentPage - 1);
     }
-  };
-  const formatNumberWithCommas = (value: number): string => {
-    return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-  };
-
-  const formatDate = (dateString: string): string => {
-    const date = new Date(dateString);
-    return date.toLocaleString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-      hour12: true,
-    });
   };
 
   const handleView = (side: any) => {

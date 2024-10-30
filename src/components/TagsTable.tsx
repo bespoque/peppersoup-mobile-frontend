@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useTags } from "@/src/context/TagsContext";
 import { BiEdit } from "react-icons/bi";
 import UpdateTagModal from "./UpdateTagModal";
+import { formatDate } from "../utils/dateUtils";
 const TagsTable: React.FC = () => {
   const { tags } = useTags();
 
@@ -25,16 +26,6 @@ const TagsTable: React.FC = () => {
     if (currentPage > 1) {
       setCurrentPage(currentPage - 1);
     }
-  };
-
-  const formatDate = (dateString: string): string => {
-    const date = new Date(dateString);
-    return date.toLocaleString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-      hour12: true,
-    });
   };
 
   const handleView = (tag: any) => {

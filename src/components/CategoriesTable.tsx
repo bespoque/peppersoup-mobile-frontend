@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useCategories } from "@/src/context/CategoriesContext";
 import UpdateCategoryModal from "./UpdateCategoryModal"; // Import the modal
 import { BiEdit } from "react-icons/bi";
+import { formatDate } from "../utils/dateUtils";
 
 const CategoriesTable: React.FC = () => {
   const { categories } = useCategories();
@@ -27,15 +28,6 @@ const CategoriesTable: React.FC = () => {
     }
   };
 
-  const formatDate = (dateString: string): string => {
-    const date = new Date(dateString);
-    return date.toLocaleString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-      hour12: true,
-    });
-  };
 
   const handleView = (category: any) => {
     setCurrentCategory(category);

@@ -97,8 +97,6 @@ export default function Configuration() {
       </div>
 
       <ConfigurationTabs />
-
-      {/* Use the ConfigModal Component */}
       {showModal && (
         <ConfigModal
           selectedMenu={selectedMenu}
