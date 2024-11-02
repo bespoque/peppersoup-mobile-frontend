@@ -107,6 +107,16 @@ export const OrdersProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       console.error("Failed to fetch orders:", err);
     }
   };
+
+    // Polling mechanism to refresh orders every 15 seconds
+    useEffect(() => {
+      const interval = setInterval(() => {
+        fetchOrders();
+      }, 15000); 
+  
+      return () => clearInterval(interval); 
+    }, []);
+
   console.log("ordersse", orders);
   
 

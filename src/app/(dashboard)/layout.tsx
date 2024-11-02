@@ -25,6 +25,7 @@ export default function DashboardLayout({
                     <div className="">
                       <Navbar />
                       {children}
+                      <OrderNotification />
                     </div>
                   </OrdersProvider>
                 </CategoriesProvider>

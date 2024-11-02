@@ -7,7 +7,6 @@ import { formatNumberWithCommas } from "../utils/numberUtils";
 
 const OrdersTabs = () => {
   const { orders, refreshOrders } = useOrders();
-console.log("ordersinside", orders);
 
   const tabLabels = ["Incoming", "Ongoing", "Completed"] as string[];
   const tabContent = {

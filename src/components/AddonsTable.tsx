@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useAddOns } from "@/src/context/AddonsContext";
 import { BiEdit } from "react-icons/bi";
 import UpdateAddonModal from "./UpdateAddonModal";
+import { formatDate } from "../utils/dateUtils";
 
 const AddonsTable: React.FC = () => {
   const { addOns } = useAddOns();
@@ -30,15 +31,7 @@ const AddonsTable: React.FC = () => {
     return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   };
 
-  const formatDate = (dateString: string): string => {
-    const date = new Date(dateString);
-    return date.toLocaleString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-      hour12: true,
-    });
-  };
+
 
   const handleView = (addon: any) => {
     setcurrentAddon(addon);
