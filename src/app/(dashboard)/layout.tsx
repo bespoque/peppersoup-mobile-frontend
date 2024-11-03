@@ -3,6 +3,7 @@ import OrderNotification from "@/src/components/OrderNotification ";
 import ProtectedRoute from "@/src/components/ProtectedRoute";
 import { AddonsProvider } from "@/src/context/AddonsContext";
 import { CategoriesProvider } from "@/src/context/CategoriesContext";
+import { DiscountsProvider } from "@/src/context/DiscountContext";
 import { MenuProvider } from "@/src/context/MenuContext";
 import { OrdersProvider } from "@/src/context/OrdersContext";
 import { PortionSizesProvider } from "@/src/context/PortionSizesContext";
@@ -22,11 +23,13 @@ export default function DashboardLayout({
               <AddonsProvider>
                 <CategoriesProvider>
                   <OrdersProvider>
-                    <div className="">
-                      <Navbar />
-                      {children}
-                      <OrderNotification />
-                    </div>
+                    <DiscountsProvider>
+                      <div className="">
+                        <Navbar />
+                        {children}
+                        <OrderNotification />
+                      </div>
+                    </DiscountsProvider>
                   </OrdersProvider>
                 </CategoriesProvider>
               </AddonsProvider>
@@ -35,6 +38,5 @@ export default function DashboardLayout({
         </PortionSizesProvider>
       </MenuProvider>
     </ProtectedRoute>
-     
   );
 }

@@ -1,21 +1,21 @@
 import React, { useState } from "react";
-import { useAddOns } from "@/src/context/AddonsContext";
+import {useDiscounts } from "@/src/context/DiscountContext";
 import { BiEdit } from "react-icons/bi";
 import UpdateAddonModal from "./UpdateAddonModal";
 import { formatDate } from "../utils/dateUtils";
 import { formatNumberWithCommas } from "../utils/numberUtils";
 
-const AddonsTable: React.FC = () => {
-  const { addOns } = useAddOns();
+const DiscountTable: React.FC = () => {
+  const { discounts } = useDiscounts();
   const [currentAddon, setcurrentAddon] = useState<any | null>(null);
   const [showModal, setShowModal] = useState(false);
   const ITEMS_PER_PAGE = 4;
   const [currentPage, setCurrentPage] = useState(1);
 
-  const totalPages = Math.ceil(addOns.length / ITEMS_PER_PAGE);
+  const totalPages = Math.ceil(discounts.length / ITEMS_PER_PAGE);
 
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-  const currentItems = addOns.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+  const currentItems = discounts.slice(startIndex, startIndex + ITEMS_PER_PAGE);
 
   const handleNextPage = () => {
     if (currentPage < totalPages) {
@@ -40,23 +40,26 @@ const AddonsTable: React.FC = () => {
       <table className="min-w-full mt-6 bg-white">
         <thead>
           <tr className="text-left bg-gray-100">
-            <th className="px-6 py-3">Addon</th>
-            <th className="px-6 py-3">Amount</th>
-            <th className="px-6 py-3">Created time</th>
-            <th className="px-6 py-3">Updated time</th>
-            <th className="px-6 py-3">Action</th>
+            <th className="px-6 py-3">Name</th>
+            <th className="px-6 py-3">Type</th>
+            <th className="px-6 py-3">Value</th>
+            <th className="px-6 py-3">Start Date</th>
+            <th className="px-6 py-3">End Date</th>
+            <th className="px-6 py-3">Status</th>
           </tr>
         </thead>
         <tbody>
-          {currentItems.map((add, index) => (
+          {currentItems.map((discount, index) => (
             <tr key={index} className="text-left bg-white border-b hover:bg-gray-200 transition-colors duration-500">
-              <td className="px-6 py-4">{add.name}</td>
-              <td className="px-6 py-4">{formatNumberWithCommas(parseFloat(add.amount))}</td>
-              <td className="px-6 py-4">{formatDate(add.created_at)}</td>
-              <td className="px-6 py-4">{formatDate(add.updated_at)}</td>
-              <td className="px-6 py-4 text-gray-800 cursor-pointer"
+              <td className="px-6 py-4">{discount.title}</td>
+              <td className="px-6 py-4">{discount.discount_type}</td>
+              <td className="px-6 py-4">{discount.discount_percentage ? `% ${discount.discount_percentage}` : formatNumberWithCommas(parseFloat(discount.fixed_amount))}</td>
+              <td className="px-6 py-4">{formatDate(discount.start_date)}</td>
+              <td className="px-6 py-4">{formatDate(discount.end_date)}</td>
+              <td className="px-6 py-4">{formatDate(discount.status)}</td>
+              {/* <td className="px-6 py-4 text-gray-800 cursor-pointer"
               onClick={() => handleView(add)}
-              > <BiEdit /></td>
+              > <BiEdit /></td> */}
             </tr>
           ))}
         </tbody>
@@ -99,4 +102,4 @@ const AddonsTable: React.FC = () => {
   );
 };
 
-export default AddonsTable;
+export default DiscountTable;

@@ -85,7 +85,7 @@ export const OrdersProvider: React.FC<{ children: React.ReactNode }> = ({ childr
             })),
           },
           ongoing_orders: {
-            ...data.data.ongoing_orders[0], // Pagination and orders data for ongoing_orders
+            ...data.data.ongoing_orders[0], 
             data: data.data.ongoing_orders[0].data.map((order: any) => ({
               ...order,
               users: order.users,
@@ -93,7 +93,7 @@ export const OrdersProvider: React.FC<{ children: React.ReactNode }> = ({ childr
             })),
           },
           completed_orders: {
-            ...data.data.completed_others[0], // Pagination and orders data for completed_orders
+            ...data.data.completed_others[0],
             data: data.data.completed_others[0].data.map((order: any) => ({
               ...order,
               users: order.users,

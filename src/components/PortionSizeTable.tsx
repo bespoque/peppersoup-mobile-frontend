@@ -53,7 +53,7 @@ const PortionSizeTable: React.FC = () => {
       <table className="min-w-full mt-6 bg-white">
         <thead>
           <tr className="text-left bg-gray-100">
-            <th className="px-6 py-3">Addon</th>
+            <th className="px-6 py-3">Size</th>
             <th className="px-6 py-3">Amount</th>
             <th className="px-6 py-3">Created time</th>
             <th className="px-6 py-3">Updated time</th>
