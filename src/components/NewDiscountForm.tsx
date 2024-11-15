@@ -31,7 +31,6 @@ export default function NewDiscountForm({ onClose }: { onClose: () => void }) {
     }
   };
 
-
   type MenuItem = {
     id: number;
     name: string;
@@ -43,40 +42,37 @@ export default function NewDiscountForm({ onClose }: { onClose: () => void }) {
       return;
     }
 
-
     const formatDateTimeFromString = (dateString: string): string => {
       // Create a Date object from the input date string
       const date = new Date(dateString);
-    
+
       // Get the year, month, day, hours, minutes, and seconds
       const year = date.getFullYear();
-      const month = String(date.getMonth() + 1).padStart(2, '0');
-      const day = String(date.getDate()).padStart(2, '0');
-      const hours = String(date.getHours()).padStart(2, '0');
-      const minutes = String(date.getMinutes()).padStart(2, '0');
-      const seconds = String(date.getSeconds()).padStart(2, '0');
-    
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const day = String(date.getDate()).padStart(2, "0");
+      const hours = String(date.getHours()).padStart(2, "0");
+      const minutes = String(date.getMinutes()).padStart(2, "0");
+      const seconds = String(date.getSeconds()).padStart(2, "0");
+
       // Return the formatted date string in "YYYY-MM-DD HH:MM:SS" format
       return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
     };
-    
+
     // Example usage:
-    const formattedDate = formatDateTimeFromString('2024-11-05');
+    const formattedDate = formatDateTimeFromString("2024-11-05");
     console.log(formattedDate); // Output: "2024-11-05 00:00:00" (or the current time if provided)
-     // Output: "2024-11-04 09:21:18"
-    
+    // Output: "2024-11-04 09:21:18"
+
     console.log("startDate", startDate);
-    
 
     const formData = new FormData();
     formData.append("title", promotionName);
     formData.append("desc", description);
     formData.append("discount_type", discountType);
-    formData.append("discount_percentage", "5");
-    // formData.append("discount_percentage", discountPercentage);
-    formData.append("fixed_amount", "5000");
-    // formData.append("fixed_amount", fixedAmount);
-    formData.append("start_date", (formatDateTimeFromString(startDate)));
+    formData.append("discount_percentage", discountPercentage);
+    // formData.append("fixed_amount", "5000");
+    formData.append("fixed_amount", fixedAmount);
+    formData.append("start_date", formatDateTimeFromString(startDate));
     formData.append("end_date", formatDateTimeFromString(endDate));
     formData.append("usage_per_user", maxUsage);
     formData.append("key_word_activation", keywordActivation);
@@ -106,7 +102,6 @@ export default function NewDiscountForm({ onClose }: { onClose: () => void }) {
         toast.error("Failed to add menu item");
         onClose();
       }
-
     } catch (error) {
       console.error("Error saving the promo:", error);
       alert("There was an error saving the promo");
@@ -136,12 +131,14 @@ export default function NewDiscountForm({ onClose }: { onClose: () => void }) {
 
       <div className="grid grid-cols-[1fr_2fr] gap-4 mb-6">
         <div>
-          <label className="flex font-bold items-center">
+          {/* <label className="flex font-bold items-center">
             <input type="checkbox" className="mr-2" />
             Remove this item from showing on mobile app
-          </label>
+          </label> */}
 
-          <label className="block mt-4">Promotion Name <span className="text-red-500 font-bold">*</span></label>
+          <label className="block mt-4">
+            Promotion Name <span className="text-red-500 font-bold">*</span>
+          </label>
           <input
             type="text"
             value={promotionName}
@@ -158,7 +155,9 @@ export default function NewDiscountForm({ onClose }: { onClose: () => void }) {
             maxLength={100}
           />
 
-          <label>Discount Types <span className="text-red-500 font-bold">*</span></label>
+          <label>
+            Discount Types <span className="text-red-500 font-bold">*</span>
+          </label>
           <select
             value={discountType}
             onChange={(e) => setDiscountType(e.target.value)}
@@ -169,30 +168,32 @@ export default function NewDiscountForm({ onClose }: { onClose: () => void }) {
             <option value="2">Fixed Amount</option>
           </select>
           <div className="flex space-x-4 mt-4">
-            <div className="w-1/2">
-              <label className="block">Or Fixed Amount</label>
-              <input
-                type="number"
-                value={fixedAmount}
-                onChange={(e) => setFixedAmount(e.target.value)}
-                className="w-full border border-gray-300 p-2 rounded"
-                disabled={discountType !== "2"}
-              />
-            </div>
-
-            <div className="w-1/2">
-              <label>Discount Percentage (%)</label>
-              <input
-                type="number"
-                value={discountPercentage}
-                onChange={(e) => setDiscountPercentage(e.target.value)}
-                className="w-full border border-gray-300 p-2 rounded"
-                disabled={discountType !== "1"}
-              />
-            </div>
+            {discountType === "2" ? (
+              <div className="w-1/2">
+                <label className="block">Fixed Amount</label>
+                <input
+                  type="number"
+                  value={fixedAmount}
+                  onChange={(e) => setFixedAmount(e.target.value)}
+                  className="w-full border border-gray-300 p-2 rounded"
+                />
+              </div>
+            ) : discountType === "1" ? (
+              <div className="w-1/2">
+                <label>Discount Percentage (%)</label>
+                <input
+                  type="number"
+                  value={discountPercentage}
+                  onChange={(e) => setDiscountPercentage(e.target.value)}
+                  className="w-full border border-gray-300 p-2 rounded"
+                />
+              </div>
+            ) : null}
           </div>
 
-          <label className="block mt-4">Valid Dates <span className="text-red-500 font-bold">*</span></label>
+          <label className="block mt-4">
+            Valid Dates <span className="text-red-500 font-bold">*</span>
+          </label>
           <div className="flex space-x-4">
             <input
               type="date"
@@ -232,7 +233,9 @@ export default function NewDiscountForm({ onClose }: { onClose: () => void }) {
             </div>
           </div>
 
-          <label className="block mt-4">Applicable Item <span className="text-red-500 font-bold">*</span></label>
+          <label className="block mt-4">
+            Applicable Item <span className="text-red-500 font-bold">*</span>
+          </label>
           {loading ? (
             <p>Loading items...</p>
           ) : error ? (
@@ -259,8 +262,7 @@ export default function NewDiscountForm({ onClose }: { onClose: () => void }) {
 
         <div className="mt-4">
           <label className="block mb-2">Promo Banner (Photo)</label>
-          <div className="border rounded-md border-gray-300 p-4 rounded flex flex-col items-center justify-center"
-          >
+          <div className="border rounded-md border-gray-300 p-4 rounded flex flex-col items-center justify-center">
             <input
               type="file"
               onChange={handleImageUpload}
@@ -278,7 +280,7 @@ export default function NewDiscountForm({ onClose }: { onClose: () => void }) {
               <img
                 src={imagePreview}
                 alt="Promo preview"
-                 className="max-h-full max-w-full"
+                className="max-h-full max-w-full"
               />
             )}
             {promoImage && (
