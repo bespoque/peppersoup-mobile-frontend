@@ -205,7 +205,6 @@ const AddMenuItemForm: React.FC<AddMenuItemFormProps> = ({ menuType }) => {
       }
     } catch (error) {
       toast.error("An error occurred. Please try again.");
-      console.error("Error adding menu item:", error);
     }
   };
 

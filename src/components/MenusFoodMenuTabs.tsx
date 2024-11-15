@@ -88,9 +88,9 @@ const MenusFoodMenu = () => {
               menuItem={selectedMenuItem}
               onUpdate={(updatedItem) => {
                 console.log("Updated item:", updatedItem);
-                setSelectedMenuItem(null); // Close the form after update
+                setSelectedMenuItem(null);
               }}
-              onClose={handleCloseModal} // Pass close function
+              onClose={handleCloseModal}
             />
           </div>
         </div>
