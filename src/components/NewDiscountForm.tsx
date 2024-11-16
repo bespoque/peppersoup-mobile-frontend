@@ -5,6 +5,7 @@ import { useApi } from "@/src/hooks/useApi";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useDiscounts } from "../context/DiscountContext";
+import { formatDateTimeFromString } from "../utils/dateUtils";
 
 export default function NewDiscountForm({ onClose }: { onClose: () => void }) {
   const [promotionName, setPromotionName] = useState("");
@@ -42,35 +43,12 @@ export default function NewDiscountForm({ onClose }: { onClose: () => void }) {
       return;
     }
 
-    const formatDateTimeFromString = (dateString: string): string => {
-      // Create a Date object from the input date string
-      const date = new Date(dateString);
-
-      // Get the year, month, day, hours, minutes, and seconds
-      const year = date.getFullYear();
-      const month = String(date.getMonth() + 1).padStart(2, "0");
-      const day = String(date.getDate()).padStart(2, "0");
-      const hours = String(date.getHours()).padStart(2, "0");
-      const minutes = String(date.getMinutes()).padStart(2, "0");
-      const seconds = String(date.getSeconds()).padStart(2, "0");
-
-      // Return the formatted date string in "YYYY-MM-DD HH:MM:SS" format
-      return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-    };
-
-    // Example usage:
-    const formattedDate = formatDateTimeFromString("2024-11-05");
-    console.log(formattedDate); // Output: "2024-11-05 00:00:00" (or the current time if provided)
-    // Output: "2024-11-04 09:21:18"
-
-    console.log("startDate", startDate);
 
     const formData = new FormData();
     formData.append("title", promotionName);
     formData.append("desc", description);
     formData.append("discount_type", discountType);
     formData.append("discount_percentage", discountPercentage);
-    // formData.append("fixed_amount", "5000");
     formData.append("fixed_amount", fixedAmount);
     formData.append("start_date", formatDateTimeFromString(startDate));
     formData.append("end_date", formatDateTimeFromString(endDate));
@@ -131,11 +109,6 @@ export default function NewDiscountForm({ onClose }: { onClose: () => void }) {
 
       <div className="grid grid-cols-[1fr_2fr] gap-4 mb-6">
         <div>
-          {/* <label className="flex font-bold items-center">
-            <input type="checkbox" className="mr-2" />
-            Remove this item from showing on mobile app
-          </label> */}
-
           <label className="block mt-4">
             Promotion Name <span className="text-red-500 font-bold">*</span>
           </label>

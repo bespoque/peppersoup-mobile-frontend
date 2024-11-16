@@ -54,11 +54,11 @@ const OrderCard: FC<OrderCardProps> = ({
         endpoint,
         "POST",
         {},
-        { order_id: id } // send the order_id as part of the payload
+        { order_id: id } 
       );
   
       if (data.resp_code === "00") {
-        refreshOrders(); // refresh the orders after successful action
+        refreshOrders();
         setShowModal(false);
         toast.success(
           isOngoingOrder ? "Order marked as completed!" : "Order confirmed successfully!"

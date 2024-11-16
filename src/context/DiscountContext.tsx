@@ -16,8 +16,10 @@ interface Discount {
   discount_rate: string;
   discount_type: string;
   discount_percentage: string;
+  key_word_activation: string;
   fixed_amount: string;
   start_date: string;
+  usage_per_user: string;
   end_date: string;
   menu_item_id: string;
   status: string;
@@ -55,6 +57,8 @@ export const DiscountsProvider: React.FC<{ children: React.ReactNode }> = ({ chi
             start_date: item.start_date,
             end_date: item.end_date,
             menu_item_id: item.menu_item_id,
+            usage_per_user: item.usage_per_user,
+            key_word_activation: item.key_word_activation,
             status: item.status,
             images: item.discount_images.map((imag: any) => ( imag.image_link)), 
             created_at: item.created_at,
@@ -67,6 +71,9 @@ export const DiscountsProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       console.error("Failed to fetch discounts:", err);
     }
   };
+
+;
+  
 
   useEffect(() => {
     if (!hasFetched.current) {
