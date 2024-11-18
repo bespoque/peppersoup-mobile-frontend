@@ -19,11 +19,11 @@ const router = useRouter()
   if (!showNotification) return null;
 
   return (
-    <div className="fixed bottom-4 right-4 bg-green-500 text-white p-3 cursor-pointer rounded-lg shadow-lg flex items-center space-x-2"
+    <div className="fixed bottom-4 right-4 bg-white e p-3 cursor-pointer rounded-lg shadow-lg flex items-center space-x-2"
     onClick={()=>router.push("/orders")}
     >
-      <div className="bg-white text-red-500 p-1 rounded-full">
-        <span className="text-xs font-bold">NEW</span>
+      <div className="bg-white p-1 rounded-full">
+        <img src="/images/icons/new_order.png" alt=""  />
       </div>
       <div>
         <p className="font-bold">New Orders Have Arrived</p>
