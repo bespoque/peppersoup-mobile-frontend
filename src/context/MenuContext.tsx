@@ -82,6 +82,9 @@ export const MenuProvider = ({ children }: { children: ReactNode }) => {
     setMenuData(categorizedData);
   };
 
+  console.log("menuData", menuData);
+  
+
   const fetchMenuItems = async () => {
     setLoading(true);
     try {
