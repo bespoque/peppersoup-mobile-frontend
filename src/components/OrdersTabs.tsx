@@ -1,7 +1,7 @@
 import Tabs from "./Tabs";
-import { useOrders } from "@/src/context/OrdersContext";
 import OrderCard from "./OrderCard";
 import CompletedOrdersTable from "./CompletedOrdersTable";
+import { useOrders } from "@/src/context/OrdersContext";
 import { formatDateWithTimeAndDay, timeAgo } from "../utils/dateUtils";
 import { formatNumberWithCommas } from "../utils/numberUtils";
 
@@ -58,6 +58,7 @@ const OrdersTabs = () => {
       <div>
         <CompletedOrdersTable
           completedOrders={orders?.completed_orders?.data || []}
+         
         />
       </div>
     ),

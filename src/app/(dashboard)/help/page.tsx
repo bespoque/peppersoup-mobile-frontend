@@ -2,7 +2,6 @@
 // import React from "react";
 // import Summary from "@/src/components/SummaryCard";
 
-
 //  const data = [
 //   {
 //     iconSrc: "/images/icons/people.png",
@@ -53,11 +52,11 @@
 //   );
 // }
 
-"use client"
+"use client";
 import React, { useState } from "react";
 import { useTickets } from "@/src/context/SupportTicketContext"; // Import TicketContext
 import ChatArea from "@/src/components/ChatAreaProps";
-
+import { formatDateWithTimeAndDay, timeAgo } from "@/src/utils/dateUtils";
 
 const Help: React.FC = () => {
   const [activeView, setActiveView] = useState("dashboard"); // Track the active view
@@ -73,20 +72,30 @@ const Help: React.FC = () => {
         {/* Ticket List */}
         <div className="w-1/3 border-r overflow-y-auto">
           <h2 className="text-lg font-bold p-4">Recent Chats</h2>
-          <ul>
+          <ul className="">
             {tickets.map((ticket) => (
               <li
                 key={ticket.id}
-                className={`p-4 border-b cursor-pointer hover:bg-gray-100 ${
-                  selectedTicket === ticket.id ? "bg-gray-200" : ""
+                className={`p-4 border mx-2 rounded-md cursor-pointer bg-white hover:bg-[#f9f6ee] my-2 ${
+                  selectedTicket === ticket.id ? "bg-[#f9f6ee]" : ""
                 }`}
                 onClick={() => setSelectedTicket(ticket.id)}
               >
-                <p className="font-medium">{ticket.title}</p>
-                <p className="text-sm text-gray-500">{ticket.message}</p>
-                <p className="text-xs text-gray-400">
-                  {new Date(ticket.created_at).toLocaleString()}
+                <p className="font-medium flex justify-between">
+                  {ticket.customer_name}{" "}
+                  <span>
+                    {formatDateWithTimeAndDay(ticket.created_at)} -{" "}
+                    {timeAgo(ticket.created_at)}
+                  </span>
                 </p>
+                <p className="text-md font-bold mb-1">
+                  {ticket.title}
+                </p>
+                <p className="text-xs font-semibold mb-1">
+                  {ticket.ticket_id}
+                </p>
+                <p className="text-sm text-gray-500">{ticket.message}</p>
+                <p className="text-xs text-gray-400"></p>
               </li>
             ))}
           </ul>
@@ -109,9 +118,9 @@ const Help: React.FC = () => {
   };
 
   return (
-    <div className="flex">
+    <div className="flex h-screen">
       {/* Sidebar */}
-      <aside className="w-64 bg-gray-50 border-r border-gray-200 p-4">
+      <aside className="w-64 border-r border-gray-200 p-4">
         <h2 className="text-lg font-semibold text-gray-700 mb-4">Support</h2>
         <p className="text-sm text-gray-500 mb-6">
           All tickets, messages are displayed here and you can manage it.
@@ -148,7 +157,7 @@ const Help: React.FC = () => {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1">
+      <main className="flex-1 h-screen">
         {activeView === "dashboard" && (
           <div className="p-4">
             <h2 className="text-xl font-bold">Support Dashboard</h2>

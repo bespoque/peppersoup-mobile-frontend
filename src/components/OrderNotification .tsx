@@ -19,7 +19,7 @@ const router = useRouter()
   if (!showNotification) return null;
 
   return (
-    <div className="fixed bottom-4 right-4 bg-white e p-3 cursor-pointer rounded-lg shadow-lg flex items-center space-x-2"
+    <div className="fixed bottom-4 left-4 bg-white e p-3 cursor-pointer rounded-lg shadow-lg flex items-center space-x-2"
     onClick={()=>router.push("/orders")}
     >
       <div className="bg-white p-1 rounded-full">
