@@ -1,18 +1,18 @@
 import Tabs from "./Tabs";
-import TagsTable from "./TagsTable";
-import CategoriesTable from "./CategoriesTable";
+import OpenTickets from "./OpenTicketssTable";
+import ClosedTickets from "./ClossedTicketsTable";
 
-const SupportTabs = () => {
-  const tabLabels = ["Open Tickets", "CLosed Tickets"] as string[];
+const SupportTabs: React.FC<{ openTickets: any[], resolvedTickets: any[] }> = ({ openTickets, resolvedTickets }) => {
+  const tabLabels = ["Open Tickets", "Closed Tickets"] as string[];
   const tabContent = {
     "Open Tickets": (
       <div className="flex space-x-2 overflow-x-auto">
-        <CategoriesTable />
+          <OpenTickets openTickets={openTickets} />
       </div>
     ),
-    "CLosed Tickets": (
+    "Closed Tickets": (
       <div className="flex space-x-2 overflow-x-auto">
-        <TagsTable />
+        <ClosedTickets resolvedTickets={resolvedTickets} />
       </div>
     ),
   };

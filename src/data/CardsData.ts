@@ -32,14 +32,14 @@ export const cardData = [
 export const Supportdata = [
   {
     iconSrc: "/images/icons/people.png",
-    title: "Active Users",
-    value: "33",
+    title: "Open Tickets",
+    value: "3",
     subtitle: "10 in the last 7 Days",
   },
   {
     iconSrc: "/images/icons/money.png",
-    title: "Annual Revenue",
-    value: "₦120,334",
-    subtitle: "Today: ₦50,000",
+    title: "Closed Tickets",
+    value: "20",
+    subtitle: "10 in the last 7 Days",
   },
 ];

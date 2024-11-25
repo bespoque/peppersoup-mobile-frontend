@@ -1,57 +1,5 @@
 "use client";
 import Summary from "@/src/components/SummaryCard";
-// import SupportSidebar from "@/src/components/SupportSideBar";
-// import React from "react";
-
-//  const data = [
-//   {
-//     iconSrc: "/images/icons/people.png",
-//     title: "Active Users",
-//     value: "33",
-//     subtitle: "10 in the last 7 Days",
-//   },
-//   {
-//     iconSrc: "/images/icons/money.png",
-//     title: "Annual Revenue",
-//     value: "₦120,334",
-//     subtitle: "Today: ₦50,000",
-//   },
-// ];
-
-// export default function Help() {
-//   return (
-//     <div>
-//       <div className="flex h-screen">
-//         <SupportSidebar />
-
-//         {/* Main Content */}
-//         <div className="flex-1 bg-gray-100">
-//           {/* Header */}
-//           <div className="px-6 py-4">
-//             <h1 className="text-xl font-bold text-gray-700">Metric Summary</h1>
-//             <p className="text-sm text-gray-500">
-//               Shows statistics of what is happening on your support module
-//             </p>
-//           </div>
-
-//           {/* Metric Cards */}
-//           <div className="grid grid-cols-3 mx-4">
-//             {data.map((card, index) => (
-//               <Summary
-//                 key={index}
-//                 iconSrc={card.iconSrc}
-//                 title={card.title}
-//                 value={card.value}
-//                 subtitle={card.subtitle}
-//                 // buttonText={card.buttonText}
-//               />
-//             ))}
-//           </div>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// }
 
 import React, { useState } from "react";
 import { useTickets } from "@/src/context/SupportTicketContext"; // Import TicketContext
@@ -64,6 +12,9 @@ const Help: React.FC = () => {
   const [activeView, setActiveView] = useState("dashboard");
   const { tickets, loading, error } = useTickets();
   const [selectedTicket, setSelectedTicket] = useState<number | null>(null);
+
+  const openTickets = tickets.filter(ticket => ticket.status === "0");
+  const resolvedTickets = tickets.filter(ticket => ticket.status === "3");
 
   const renderRecentChats = () => {
     if (loading) return <p>Loading tickets...</p>;
@@ -167,11 +118,10 @@ const Help: React.FC = () => {
                   title={card.title}
                   value={card.value}
                   subtitle={card.subtitle}
-                  // buttonText={card.buttonText}
                 />
               ))}
             </div>
-            <SupportTabs />
+            <SupportTabs openTickets={openTickets} resolvedTickets={resolvedTickets} />
           </>
         )}
         {activeView === "recentChats" && renderRecentChats()}
